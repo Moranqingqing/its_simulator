@@ -1,0 +1,397 @@
+"general":
+  "id": "main_easy_contextual_stochastic"
+  "run_tensorboard": True
+
+"envs_collection": "gw_easy_contextual_stochastic"
+
+"import_models":
+  "address": "googlecloud"
+  "local_workspace": "/home/ncarrara/work/rltl/rltl/main/data/main_easy_contextual_stochastic"
+  "remote_workspace": "/home/nicolas_carrara1u/work/rltl/rltl/main/data/main_easy_contextual_stochastic"
+
+"inferences":
+  #  "context_type": "bypass"
+#  "context_type": "max"
+  "context_type": "softmax"
+  #  "context_type": "nothing"
+#  "bypass_hyper_network": True
+  "bypass_hyper_network": False
+  "plot_ground_truth": False
+#  "plot_ground_truth": True
+  "repeat_bayesian_inferences": 10
+  "fake_color_alpha": 0.1
+#  "n_repeat_forward": 300
+  "n_repeat_forward": 33
+  "sigma_eps": 0.02
+
+  "exploration":
+    "type": "grid"
+    "n_repeat": 1
+    #    "deltas": [ 0.2,0.2 ]
+    "deltas": [ 0.1,0.1 ]
+    "std": 0.0
+
+#"create_datasets":
+#  "save_source_trajectories": True
+#  "alpha": 0.1
+#  "exploration":
+#    "type": "uniform"
+#    "n_samples": 50000
+
+"visualize_classifiers":
+  "repeat_sources": 10
+  "deltas_sources": [ 0.2,0.2 ]
+  "repeat_context": 10
+  "deltas_context": [ 0.1,0.1 ]
+  "repeat_bayesian_inference": 10
+
+
+"learn_gans":
+  # COMMON PARAMETERS
+  "classifier_baseline": "full_bayesian"
+  "interval_verbose_minibatch": 100
+  "buffer_size_by_source_env": 2500
+  "interval_eval_epoch": 1
+  "interval_save_models": 1
+  "verbose": True
+  "ratio_train_to_test": 0.95
+  "G_output_neurons": [ 2 ]
+
+  "sum_fake_and_real_for_entropy": null
+  "learn_targets": True
+  "use_bce_tf_function": False
+  "factorize_fake_output": True
+  "D_activation": "relu"
+  "G_activation": "relu"
+  "non_saturing": True
+  "stop":
+    "max_epochs": 500 # 1000
+    "testing_loss_treshold": 0.005
+    "training_loss_treshold": 0.005
+  "D_n_updates": 1
+  "G_n_updates": 3
+  "D_hidden_layers": [ 256,128,64 ]
+  "G_hidden_layers": [ 256,128,64 ]
+  "D_optimizer":
+    "type": "rms"
+    "params": { }
+  "G_optimizer":
+    "type": "rms"
+    "params": { }
+  "G_output_activations": [ 'sigmoid' ]
+  "lambda_penalize_high_entropy": 0
+  "G_batch_norm": False
+  "D_batch_norm": False
+  "noisy_input_context_vector": 0
+  "lambda_": 0
+  "batch_size": 256
+  # BASELINES
+  "baselines":
+    "sigma_vae":
+      "type": "classic"
+      "interval_inferences": 25
+      "interval_save_model": 25
+      "interval_eval_epoch": 25
+      "generative_type": "CVAE"
+      "buffer_size_by_source_env": 1000
+      "show_schedule": False
+      "CVAE_optimizer":
+        "type": "adam"
+        "params":
+          "learning_rate": 0.001 # 0.001 good but alternative between mod collasping and good
+      "stop":
+        "max_epochs": 1000
+        "testing_loss_treshold": 0.005
+        "training_loss_treshold": 0.005
+      "encoder_hiddens": [ 64,32 ]
+      "decoder_hiddens": [ 32,64 ]
+      "encoder_activation": "relu"
+      "decoder_activation": "relu"
+      "sigmoid_output": True
+      #SIGMA VAE
+      "color": [ 0.50,0.95,0.75,1 ]
+      "reconstruction_loss":
+        "type": "gaussian_log_likelihood"
+        "params":
+          "decoder_output_std": False
+          "std": "optimal_sigma"
+          "sample_decoder": False
+
+      "show_latent_space": False
+      "batch_size": 32
+      "learn_with_onehot_context": True
+      "z_size": 3
+      "dynamics":
+        "G_dropout": 0
+
+    "hyper_mse_vae":
+      "type": "hyper_vae"
+      "interval_inferences": 25
+      "interval_save_model": 25
+      "interval_eval_epoch": 25
+      "generative_type": "CVAE"
+      "buffer_size_by_source_env": 1000
+      "show_schedule": False
+
+      "stop":
+        "max_epochs": 1000
+        "testing_loss_treshold": 0.005
+        "training_loss_treshold": 0.005
+      "encoder_hiddens": [ 64,32 ]
+      "decoder_hiddens": [ 32,64 ]
+      "encoder_activation": "relu"
+      "decoder_activation": "relu"
+      "sigmoid_output": True
+
+
+      #      #SIGMA VAE
+      #      "color": [ 1,1,0,1 ]
+      #      "reconstruction_loss":
+      #        "type": "gaussian_log_likelihood"
+      #        "params":
+      #          "decoder_output_std": False
+      #          "std": "optimal_sigma"
+      #          "sample_decoder": False
+
+      # MSE
+      "color": [ 0.,1,1,1 ]
+      "reconstruction_loss":
+        "type": "mse"
+        "params": { }
+      "kl_weight": 0.001
+      "reconstruction_weight": 1
+
+      "CVAE_optimizer":
+        "type": "rms"
+        "params":
+          "learning_rate": 0.001
+
+      "show_latent_space": False
+      "batch_size": 32
+      "learn_with_onehot_context": True
+      "z_size": 3
+      "dynamics":
+        "G_dropout": 0
+    "hyper_sigma_vae":
+      "type": "hyper_vae"
+      "interval_inferences": 25
+      "interval_save_model": 25
+      "interval_eval_epoch": 25
+      "generative_type": "CVAE"
+      "buffer_size_by_source_env": 1000
+      "show_schedule": False
+
+      "stop":
+        "max_epochs": 1000
+        "testing_loss_treshold": 0.005
+        "training_loss_treshold": 0.005
+      "encoder_hiddens": [ 64,32 ]
+      "decoder_hiddens": [ 32,64 ]
+      "encoder_activation": "relu"
+      "decoder_activation": "relu"
+      "sigmoid_output": True
+
+
+      #SIGMA VAE
+      "color": [ 1,1,0,1 ]
+      "reconstruction_loss":
+        "type": "gaussian_log_likelihood"
+        "params":
+          "decoder_output_std": False
+          "std": "optimal_sigma"
+          "sample_decoder": False
+
+      #      # MSE
+      #      "color": [ 0.25,0.5,0.75,1 ]
+      #      "reconstruction_loss":
+      #        "type": "mse"
+      #        "params": {}
+      #      "kl_weight": 0.001
+      #      "reconstruction_weight": 1
+
+      "CVAE_optimizer":
+        "type": "rms"
+        "params":
+          "learning_rate": 0.001
+
+      "show_latent_space": False
+      "batch_size": 32
+      "learn_with_onehot_context": True
+      "z_size": 3
+      "dynamics":
+        "G_dropout": 0
+    "hyper_sigma_vae_v2":
+      "type": "hyper_vae"
+      "interval_inferences": 25
+      "interval_save_model": 25
+      "interval_eval_epoch": 25
+      "generative_type": "CVAE"
+      "buffer_size_by_source_env": 1000
+      "show_schedule": False
+
+      "stop":
+        "max_epochs": 1000
+        "testing_loss_treshold": 0.005
+        "training_loss_treshold": 0.005
+      "encoder_hiddens": [ 128,64,32 ]
+      "decoder_hiddens": [ 32,64,128 ]
+      "encoder_activation": "relu"
+      "decoder_activation": "relu"
+      "sigmoid_output": True
+
+
+      #SIGMA VAE
+      "color": [ 1,0,1,1 ]
+      "reconstruction_loss":
+        "type": "gaussian_log_likelihood"
+        "params":
+          "decoder_output_std": False
+          "std": "optimal_sigma"
+          "sample_decoder": False
+
+      #      # MSE
+      #      "color": [ 0.25,0.5,0.75,1 ]
+      #      "reconstruction_loss":
+      #        "type": "mse"
+      #        "params": {}
+      #      "kl_weight": 0.001
+      #      "reconstruction_weight": 1
+
+      "CVAE_optimizer":
+        "type": "rms"
+        "params":
+          "learning_rate": 0.001
+
+      "show_latent_space": False
+      "batch_size": 32
+      "learn_with_onehot_context": True
+      "z_size": 3
+      "dynamics":
+        "G_dropout": 0
+    "vae":
+      #      "type": "hyper_vae"
+      "type": "classic"
+      "interval_inferences": 100
+      "interval_save_model": 100
+      "interval_eval_epoch": 100
+      "generative_type": "CVAE"
+      "buffer_size_by_source_env": 1000
+      "show_schedule": False
+      "CVAE_optimizer":
+        "type": "adam"
+        "params":
+          "learning_rate": 0.01
+      #            "type": "ExponentialDecay"
+      #            "params":
+      #              "initial_learning_rate": 0.01
+      #              "decay_steps": 1000
+      #              "decay_rate": 0.96
+      #              "staircase": True
+      "stop":
+        "max_epochs": 1000
+        "testing_loss_treshold": 0.005
+        "training_loss_treshold": 0.005
+      "encoder_hiddens": [ 64,32 ]
+      "decoder_hiddens": [ 32,64 ]
+      "encoder_activation": "relu"
+      "decoder_activation": "relu"
+      "sigmoid_output": True
+
+
+      "reconstruction_loss":
+        "type": "mse"
+        "params": { }
+      #      "do_not_use_s_": True
+
+      "kl_weight": 0.001 #"auto", auto doens't work well
+      "reconstruction_weight": "auto" #1
+      "lambda_kl_free_bit": "-inf"
+
+      "batch_size": 32
+      "learn_with_onehot_context": True
+      "z_size": 2
+      "color": [ 1,1,1,1 ]
+      "dynamics":
+        "G_dropout": 0
+        "D_dropout": 0
+    "hyper_gan_z_5":
+      "type": "hyper_gan"
+      "learn_with_onehot_context": True
+      "color": [ 0,0,1,1 ]
+      "z_size": 5
+      "dynamics":
+        "G_dropout": 0
+        "D_dropout": 0
+    "hyper_gan_z_25":
+      "D_hidden_layers": [ 512,512,512 ]
+      "G_hidden_layers": [ 512,512,512 ]
+      "type": "hyper_gan"
+      "learn_with_onehot_context": True
+      "color": [ 0,0,1,1 ]
+      "z_size": 25
+      "dynamics":
+        "G_dropout": 0
+        "D_dropout": 0
+    "hyper_gan_z_20":
+      "interval_inferences": 10
+      "interval_save_model": 10
+      "interval_eval_epoch": 10
+      "generative_type": "GAN"
+      "buffer_size_by_source_env": 2500
+      "stop":
+        "max_epochs": 500
+        "testing_loss_treshold": 0.005
+        "training_loss_treshold": 0.005
+      "type": "hyper_gan"
+      "learn_with_onehot_context": True
+      "color": [ 0.5,0,1,1 ]
+      "z_size": 20
+      "D_hidden_layers": [ 128, 64,32 ]
+      "G_hidden_layers": [ 128, 64,32 ]
+      "batch_size": 32
+      "dynamics":
+        "G_dropout": 0
+        "D_dropout": 0
+    "one_gan_by_env_z_10":
+      "interval_inferences": 10
+      "interval_save_model": 10
+      "interval_eval_epoch": 10
+      "buffer_size_by_source_env": 2500
+      "generative_type": "GAN"
+      "stop":
+        "max_epochs": 500 # 1000
+        "testing_loss_treshold": 0.005
+        "training_loss_treshold": 0.005
+      "D_hidden_layers": [ 128, 64,32 ]
+      "G_hidden_layers": [ 128, 64,32 ]
+      #      "batch_size": 256
+      "batch_size": 32
+      "type": "classic"
+      "z_size": 10
+      "color": [ 1,0,0,1 ]
+      "dynamics":
+        "G_dropout": 0
+        "D_dropout": 0
+    "agglo_gan":
+      "type": "agglomerated_gan"
+      "color": [ 0,1,0,1 ]
+      "dynamics":
+        "G_dropout": 0
+        "D_dropout": 0
+    "hyper_nn":
+      "type": "hyper_nn"
+      "learn_with_onehot_context": True
+      "color": [ 1,1,0,1 ]
+      "z_size": 0
+      "dynamics":
+        "G_dropout": 0
+        "D_dropout": 0
+    "hyper_nn_training_True":
+      "type": "hyper_nn"
+      "learn_with_onehot_context": True
+      "color": [ 1,1,0.25,1 ]
+      "z_size": 0
+      "dynamics":
+        "training": True
+        "G_dropout": 0.5
+        "D_dropout": 0

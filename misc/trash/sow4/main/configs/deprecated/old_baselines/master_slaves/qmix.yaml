@@ -1,0 +1,137 @@
+"ray":
+  "init":
+    "local_mode": false
+    "log_to_driver": true
+    "logging_level": "WARNING"
+  "run_experiments":
+    "experiments":
+      "qmix_fast":
+        "run": "QMIX"
+        "checkpoint_freq": 1
+        "checkpoint_at_end": true
+        "stop":
+          "training_iteration": 30
+        "config":
+
+          ####################
+          ####################
+          # OTHERS
+          ####################
+          ####################
+
+          "log_level": "WARNING"
+
+          ####################
+          ####################
+          # RL ALGO PARAMS
+          ####################
+          ####################
+
+          "num_gpus": 1
+          "num_workers": 7
+          "num_cpus_per_worker": 1
+          "timesteps_per_iteration": 10000
+          ####################
+          ####################
+          # EVALUATION
+          ####################
+          ####################
+
+          "evaluation_interval": 1 # Evaluate with every `evaluation_interval` training iterations.
+          "evaluation_num_episodes": 10
+          "in_evaluation": False
+          "evaluation_config":
+            "explore": False
+          "evaluation_num_workers": 0
+          "custom_eval_function": null
+          "use_exec_api": False
+
+          ####################
+          ####################
+          # EXPLORATION
+          ####################
+          ####################
+
+          # default
+
+          ####################
+          ####################
+          # MODEL
+          ####################
+          ####################
+
+          # default
+
+          ####################
+          ####################
+          # ENV
+          ####################
+          ####################
+          "gamma": 0.995
+          "horizon": null # if null, horizon will be choosen by env
+          "env": "a_master_slaves_3"
+          "env_config":
+            "render": false
+            "simulator": "traci"
+            "sim_params":
+              "restart_instance": True
+              "sim_step": 1
+              "print_warnings": False
+              "render": False
+            "env_state_params":
+              "name": "concatenate_agents_boxes"
+              "params": {}
+            "groups_agent_params":
+              "name": "single_group"
+              "params": {}
+            "multi_agent_config_params": null
+            "agents_params":
+              "name": "all_the_same"
+              "params":
+                "default_policy": null
+                "global_reward": false
+                "action_params":
+                  "name": "ExtendChangePhaseConnector"
+                  "params": {}
+                "obs_params":
+                  "name": "TDTSEConnector"
+                  "params":
+                    "obs_params":
+                      "num_history": 1
+                      "detector_position": [5, 100]
+                    "phase_channel": true
+                    "raw_obs": true
+                    "use_progression": false
+                "reward_params":
+                  "name": "QueueRewardConnector"
+                  "params":
+                    "stop_speed": 2
+"general":
+  "id": "main"
+  "seed": null
+  "repeat": 1
+  "is_tensorboardX": false
+  "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "/media/ncarrara/stockage/ray_results"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+
+

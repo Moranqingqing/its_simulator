@@ -1,0 +1,86 @@
+"ray":
+  "init":
+    "local_mode": false
+    "log_to_driver": true
+    "logging_level": "WARNING"
+  "run_experiments":
+    "experiments":
+      "random":
+        "run": "EVALUATOR"
+        "stop":
+          "training_iteration": 1
+        "config":
+          "num_gpus": 0
+          "num_workers": 7
+          "timesteps_per_iteration": 10000
+
+          ####################
+          ####################
+          # ENV
+          ####################
+          ####################
+          "horizon": null # if null, horizon will be choosen by wolfenv
+          "env": "traffic_env_test2"
+          "env_config":
+            "render": false
+            "simulator": "traci"
+            "sim_params":
+              "restart_instance": True
+              "sim_step": 1
+              "print_warnings": False
+              "render": True
+            "env_state_params": null
+            "group_agents_params": null
+            "multi_agent_config_params":
+              "name": "shared_policy"
+              "params": {}
+            "agents_params":
+              "name": "all_the_same"
+              "params":
+                "global_reward": false
+                "default_policy":
+                  "name": "random"
+                  "params": {}
+                "action_params":
+                  "name": "ExtendChangePhaseConnector"
+                  "params": {}
+                "obs_params":
+                  "name": "TDTSEConnector"
+                  "params":
+                    "obs_params":
+                      "num_history": 60
+                      "detector_position": [5, 100]
+                    "phase_channel": true
+                "reward_params":
+                  "name": "QueueRewardConnector"
+                  "params":
+                    "stop_speed": 2
+"general":
+  "id": "main"
+  "seed": null
+  "repeat": 1
+  "is_tensorboardX": false
+  "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "wolf/tests/traffic_env/test2/results"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+
+

@@ -1,0 +1,358 @@
+# Single agent running the whole network
+"factory_type": "green_wave"
+"ray":
+  "init":
+    "local_mode": false
+    "log_to_driver": true
+    "logging_level": "DEBUG"
+  #    "object_store_memory": 1000000000
+  "run_experiments":
+    "experiments":
+#      "mono_agent":
+#        "run": "APEX"
+#        "checkpoint_freq": 1
+#        "checkpoint_at_end": true
+#        "stop":
+#          "training_iteration": 25
+#        "config":
+#
+#          #          # === Model ===
+#          "num_atoms": 1 # Number of atoms for representing the distribution of return. When
+#          "v_min": -10.0 # this is greater than 1, distributional Q-learning is used.
+#          "v_max": 10.0  # the discrete supports are bounded by v_min and v_max
+#          "noisy": False # Whether to use noisy network
+#          "sigma0": 0.5 # control the initial value of noisy nets
+#          "dueling": True # Whether to use dueling dqn
+#          "double_q": True # Whether to use double dqn
+#          "hiddens": [256] # Postprocess model outputs with these hidden layers to compute the state and action values. See also the model config in catalog.py.
+#          #        "n_step": 1 # N-step Q learning
+#          # === Exploration Settings (Experimental) ===
+#          #        "exploration_config":
+#          #            "type": "EpsilonGreedy" # The Exploration class to use.
+#          #            "initial_epsilon": 1.0  # Config for the Exploration class' constructor
+#          #            "final_epsilon": 0.02,
+#          #            "epsilon_timesteps": 10000,  # Timesteps over which to anneal epsilon.
+#          #             For soft_q, use:
+#          #             "exploration_config" = {
+#          #               "type": "SoftQ"
+#          #               "temperature": [float, e.g. 1.0]
+#          #             }
+#          "evaluation_config":
+#            "explore": False # Switch to greedy actions in evaluation workers.
+#          "parameter_noise": False # TODO(sven): Make Exploration class for parameter noise. If True parameter space noise will be used for exploration See https://blog.openai.com/better-exploration-with-parameter-noise/
+#          #        "timesteps_per_iteration": 1000 # Minimum env steps to optimize for per train call. This value does  not affect learning, only the length of iterations.
+#          #        "target_network_update_freq": 500 # Update the target network every `target_network_update_freq` steps.
+#          # === Replay buffer ===
+#          #        "buffer_size": 50000 # Size of the replay buffer. Note that if async_updates is set, then each worker will have a replay buffer of this size.
+#          "prioritized_replay": True # If True prioritized replay buffer will be used.
+#          "prioritized_replay_alpha": 0.6 # Alpha parameter for prioritized replay buffer.
+#          "prioritized_replay_beta": 0.4 # Beta parameter for sampling from prioritized replay buffer.
+#          "final_prioritized_replay_beta": 0.4 # Final value of beta (by default, we use constant beta=0.4).
+#          "prioritized_replay_beta_annealing_timesteps": 20000 # Time steps over which the beta parameter is annealed.
+#          "prioritized_replay_eps": 0.000001 # 1e-6 # Epsilon to add to the TD errors when updating priorities.
+#          "compress_observations": False # Whether to LZ4 compress observations
+#          # === Optimization ===
+#          "lr": 0.0005 #5e-4  # Learning rate for adam optimizer
+#          "lr_schedule": null # Learning rate schedule
+#          "adam_epsilon": 0.00000001 #1e-8 # Adam epsilon hyper parameter
+#          "grad_norm_clipping": 40 # If not None, clip gradients during optimization at this value
+#          #        "learning_starts": 1000 # How many steps of the model to sample before learning starts.
+#          #        "rollout_fragment_length": 4 # Update the replay buffer with this many samples at once. Note that this setting applies per-worker if num_workers > 1.
+#          #        "train_batch_size": 32  # Size of a batched sampled from replay buffer for training. Note that if async_updates is set, then each worker returns gradients for a  batch of this size.
+#          # === Parallelism ===
+#          #        "num_workers": 0 # Number of workers for collecting samples with. This only makes sense # to increase if your environment is particularly slow to sample, or if # you"re using the Async or Ape-X optimizers.
+#          #        "worker_side_prioritization": False # Whether to compute priorities on workers.
+#          #        "min_iter_time_s": 1 # Prevent iterations from going lower than this time span
+#          # === APEX specific ===
+#          "optimizer":
+#            "max_weight_sync_delay": 400
+#            "num_replay_buffer_shards": 4
+#            "debug": False
+#          "num_gpus": 1
+#          "n_step": 1 # 3
+#          "num_workers": 7
+#          "buffer_size": 100000 #2000000
+#          "learning_starts": 1000 #50000
+#          "train_batch_size": 32 #512
+#          "rollout_fragment_length": 50
+#          "target_network_update_freq": #500000
+#            "grid_search": [100] # TODO try 1000 for more stability
+#          "timesteps_per_iteration": 5000 #25000
+#          "exploration_config": {"type": "PerWorkerEpsilonGreedy"}
+#          "worker_side_prioritization": True
+#          "min_iter_time_s": 30
+#          # === others ====
+#          "log_level": "DEBUG"
+#          "num_cpus_per_worker": 1
+#          "gamma":
+#            "grid_search": [0.99, 0.0]
+#          "model":
+#            "custom_model": "tdtse"
+#            "custom_options":
+#              "conv_kernel_size": 8
+#              "conv_layer_size": 32
+#              "dense_layer_size": 128
+#            # === env_config ===
+#          "horizon": null # if null, horizon will be choosen by env
+#          "env_config":
+#            "row_probability": 0.7
+#            "column_probability": 0.0000001 #0.05
+#            "sim_params":
+#              "restart_instance": true
+#              "sim_step": 1
+#              #              "render": true
+#              "render": false
+#              "print_warnings": false
+#            "n_intersections": 1
+#            "simulator": "traci"
+#            "agents_params":
+#              "module": "sow45.world.environments.traffic.agents.agent_factory"
+#              "class_name": "OneAgentForAllIntersections"
+#              "params":
+#                "default_policy": null
+#                "action_params":
+#                  "module": "sow45.world.environments.traffic.agents.connectors.action.exchange_change_phase"
+#                  "class_name": "MultiNodesPhaseConnector"
+#                  "params":
+#                    "phases": ["GrGr","rGrG"]
+#                    "tl_params":
+#                      "green_min": 10
+#                      "green_max": 6000
+#                      "yellow_max": 3
+#                      "red_max": 6000
+#                "obs_params":
+#                  "module": "sow45.world.environments.traffic.agents.connectors.observation.tdtse"
+#                  "class_name": "MultiNodesTDTSEConnector"
+#                  "params":
+#                    "tl_logic": ["GrGr","rGrG"]
+#                    "obs_params":
+#                      "num_history": 60
+#                      "detector_position": [5, 100]
+#                    "phase_channel": true
+#                "reward_params":
+#                  "module": "sow45.world.environments.traffic.agents.connectors.reward.queue_reward_connector"
+#                  "class_name": "MultiNodesQueueRewardConnector"
+#                  "params":
+#                    "stop_speed": 0.3
+#                    "n": 100
+#
+#            "env_params":
+#              "warmup_steps": 0
+#              "horizon": 500
+#              "additional_params":
+#                "target_velocity": 50
+#                "switch_time": 3
+#                "num_observed": 2
+#                "discrete": false
+#                "tl_type": "actuated"
+#                "num_local_edges": 4
+#                "num_local_lights": 4
+#            "net_params":
+#              "additional_params":
+#                "speed_limit": 35
+#                "grid_array":
+#                  "short_length": 300
+#                  "inner_length": 300
+#                  "long_length": 100
+#                  "cars_left": 1
+#                  "cars_right": 1
+#                  "cars_top": 1
+#                  "cars_bot": 1
+#                "horizontal_lanes": 1
+#                "vertical_lanes": 1
+      "single":
+        "run": "APEX"
+        "checkpoint_freq": 1
+        "checkpoint_at_end": true
+        "stop":
+          "training_iteration": 25
+        "config":
+
+          #          # === Model ===
+          "num_atoms": 1 # Number of atoms for representing the distribution of return. When
+          "v_min": -10.0 # this is greater than 1, distributional Q-learning is used.
+          "v_max": 10.0  # the discrete supports are bounded by v_min and v_max
+          "noisy": False # Whether to use noisy network
+          "sigma0": 0.5 # control the initial value of noisy nets
+          "dueling": True # Whether to use dueling dqn
+          "double_q": True # Whether to use double dqn
+          "hiddens": [256] # Postprocess model outputs with these hidden layers to compute the state and action values. See also the model config in catalog.py.
+          #        "n_step": 1 # N-step Q learning
+          # === Exploration Settings (Experimental) ===
+          #        "exploration_config":
+          #            "type": "EpsilonGreedy" # The Exploration class to use.
+          #            "initial_epsilon": 1.0  # Config for the Exploration class' constructor
+          #            "final_epsilon": 0.02,
+          #            "epsilon_timesteps": 10000,  # Timesteps over which to anneal epsilon.
+          #             For soft_q, use:
+          #             "exploration_config" = {
+          #               "type": "SoftQ"
+          #               "temperature": [float, e.g. 1.0]
+          #             }
+          "evaluation_config":
+            "explore": False # Switch to greedy actions in evaluation workers.
+          "parameter_noise": False # TODO(sven): Make Exploration class for parameter noise. If True parameter space noise will be used for exploration See https://blog.openai.com/better-exploration-with-parameter-noise/
+          #        "timesteps_per_iteration": 1000 # Minimum env steps to optimize for per train call. This value does  not affect learning, only the length of iterations.
+          #        "target_network_update_freq": 500 # Update the target network every `target_network_update_freq` steps.
+          # === Replay buffer ===
+          #        "buffer_size": 50000 # Size of the replay buffer. Note that if async_updates is set, then each worker will have a replay buffer of this size.
+          "prioritized_replay": True # If True prioritized replay buffer will be used.
+          "prioritized_replay_alpha": 0.6 # Alpha parameter for prioritized replay buffer.
+          "prioritized_replay_beta": 0.4 # Beta parameter for sampling from prioritized replay buffer.
+          "final_prioritized_replay_beta": 0.4 # Final value of beta (by default, we use constant beta=0.4).
+          "prioritized_replay_beta_annealing_timesteps": 20000 # Time steps over which the beta parameter is annealed.
+          "prioritized_replay_eps": 0.000001 # 1e-6 # Epsilon to add to the TD errors when updating priorities.
+          "compress_observations": False # Whether to LZ4 compress observations
+          # === Optimization ===
+          "lr": 0.0005 #5e-4  # Learning rate for adam optimizer
+          "lr_schedule": null # Learning rate schedule
+          "adam_epsilon": 0.00000001 #1e-8 # Adam epsilon hyper parameter
+          "grad_norm_clipping": 40 # If not None, clip gradients during optimization at this value
+          #        "learning_starts": 1000 # How many steps of the model to sample before learning starts.
+          #        "rollout_fragment_length": 4 # Update the replay buffer with this many samples at once. Note that this setting applies per-worker if num_workers > 1.
+          #        "train_batch_size": 32  # Size of a batched sampled from replay buffer for training. Note that if async_updates is set, then each worker returns gradients for a  batch of this size.
+          # === Parallelism ===
+          #        "num_workers": 0 # Number of workers for collecting samples with. This only makes sense # to increase if your environment is particularly slow to sample, or if # you"re using the Async or Ape-X optimizers.
+          #        "worker_side_prioritization": False # Whether to compute priorities on workers.
+          #        "min_iter_time_s": 1 # Prevent iterations from going lower than this time span
+          # === APEX specific ===
+          "optimizer":
+            "max_weight_sync_delay": 400
+            "num_replay_buffer_shards": 4
+            "debug": False
+          "num_gpus": 1
+          "n_step": 1 # 3
+          "num_workers": 2
+          "buffer_size": 100000 #2000000
+          "learning_starts": 0 #50000
+          "train_batch_size": 32 #512
+          "rollout_fragment_length": 500
+          "target_network_update_freq": #500000
+            "grid_search": [1000] # TODO try 1000 for more stability
+          "timesteps_per_iteration": 5000 #25000
+          "exploration_config": {"type": "PerWorkerEpsilonGreedy"}
+          "worker_side_prioritization": True
+          "min_iter_time_s": 30
+          # === others ====
+          "log_level": "DEBUG"
+          "num_cpus_per_worker": 1
+          "gamma":
+            "grid_search": [0.99]
+          "model":
+            "custom_model": "tdtse"
+            "custom_options":
+              "conv_kernel_size": 8
+              "conv_layer_size": 32
+              "dense_layer_size": 128
+            # === env_config ===
+          "horizon": null # if null, horizon will be choosen by env
+          "env_config":
+            "row_probability": 1.0
+            "column_probability": 0.0 #0.05
+            "sim_params":
+              "restart_instance": true
+              "sim_step": 1
+#              "render": true
+              "render": false
+              "print_warnings": false
+            "n_intersections": 1
+            "simulator": "traci"
+            "agents_params":
+              "module": "sow45.world.environments.traffic.agents.agent_factory"
+              "class_name": "OneTlAgentByIntersection"
+              "params":
+                "default_policy": null
+                "action_params":
+                  "module": "sow45.world.environments.traffic.agents.connectors.action.exchange_change_phase"
+                  "class_name": "ExtendChangePhaseConnector"
+                  "params":
+#                    "phases": ["rGrG"] #["GrGr"]#,"rGrG"]
+                    "phases": ["rGrG","GrGr"]#,"rGrG"]
+                    "tl_params":
+                      "green_min": 0
+                      "green_max": inf
+                      "yellow_min": 3
+                      "yellow_max": 3
+                      "red_min": 3
+                      "red_max": inf
+                "obs_params":
+                  "module": "sow45.world.environments.traffic.agents.connectors.observation.tdtse"
+                  "class_name": "TDTSEConnector"
+                  "params":
+#                    "tl_logic": ["rGrG"] #["GrGr"]#,"rGrG"]
+                    "tl_logic": ["rGrG","GrGr"]#,"rGrG"]
+                    "obs_params":
+                      "num_history": 60
+                      "detector_position": [5, 100]
+                    "phase_channel": true
+                "reward_params":
+                  "module": "sow45.world.environments.traffic.agents.connectors.reward.queue_reward_connector"
+                  "class_name": "QueueRewardConnector"
+                  "params":
+                    "stop_speed": 0.3
+                    "n": 100
+            "detector_params":
+              "positions": [-5, -100]
+              "frequency": 100
+            "vehicles_params":
+              "min_gap": 2.5
+              "max_speed": 30
+              "decel": 7.5
+              "speed_mode": "right_of_way"
+
+            "env_params":
+              "warmup_steps": 0
+              "horizon": 500
+              "additional_params":
+                "target_velocity": 50
+                "switch_time": 3
+                "num_observed": 2
+                "discrete": false
+                "tl_type": "actuated"
+                "num_local_edges": 4
+                "num_local_lights": 4
+            "net_params":
+              "additional_params":
+                "speed_limit": 35
+                "grid_array":
+                  "short_length": 300
+                  "inner_length": 300
+                  "long_length": 100
+                  "cars_left": 1
+                  "cars_right": 1
+                  "cars_top": 1
+                  "cars_bot": 1
+                "horizontal_lanes": 1
+                "vertical_lanes": 1
+
+"general":
+  "id": "main"
+  "seed": null
+  "is_tensorboardX": false
+  "workspace": "tmp/main"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "INFO"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "INFO"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+        
+      
+    
+  
+
+

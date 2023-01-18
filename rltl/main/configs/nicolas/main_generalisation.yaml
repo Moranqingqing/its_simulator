@@ -1,0 +1,29 @@
+"general":
+  "id": "main_generalisation"
+
+"envs_collection": "gw_generalisation"
+
+"import_models":
+  "address": "googlecloud"
+  "local_workspace": "/home/ncarrara/work/rltl/rltl/main/data/main_generalisation"
+  "remote_workspace": "/home/nicolas_carrara1u/work/rltl/rltl/main/data/main_generalisation"
+
+"inferences":
+  "fake_color_alpha": 0.1
+  "n_repeat_forward": 5
+  "exploration":
+    "type": "grid"
+    "n_repeat": 1
+    "deltas": [ 0.05,0.05 ]
+    "std": 0.0
+
+"visualize_classifiers":
+  "repeat_sources": 1
+  "deltas_sources": [ 0.2,0.2 ]
+  "deltas_context": [ 0.05,0.05 ]
+  "repeat_context": 1
+
+"learn_gans":
+  "buffer_size_by_source_env": 500
+  "stop":
+    "max_epochs": 1000

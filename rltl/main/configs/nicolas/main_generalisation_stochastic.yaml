@@ -1,0 +1,29 @@
+"general":
+  "id": "main_generalisation_stochastic"
+
+"envs_collection": "gw_generalisation_stochastic"
+
+"import_models":
+  "address": "googlecloud"
+  "local_workspace": "/home/ncarrara/work/rltl/rltl/main/data/main_generalisation_stochastic"
+  "remote_workspace": "/home/nicolas_carrara1u/work/rltl/rltl/main/data/main_generalisation_stochastic"
+
+"inferences":
+  "fake_color_alpha": 0.1
+  "n_repeat_forward": 90
+  "exploration":
+    "type": "grid"
+    "n_repeat": 1
+    "deltas": [ 0.2,0.2 ]
+    "std": 0.0
+
+"visualize_classifiers":
+  "repeat_sources": 10
+  "deltas_sources": [0.33,0.33]
+  "deltas_context": [0.05,0.05]
+  "repeat_context": 10
+
+"learn_gans":
+  "buffer_size_by_source_env": 1000
+  "stop":
+    "max_epochs": 1000

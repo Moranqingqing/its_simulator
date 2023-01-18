@@ -1,0 +1,104 @@
+"general":
+  "id": "main_debug"
+
+"envs_collection": "gw_swap"
+
+"import_models":
+  "address": "googlecloud"
+  "local_workspace": "/home/ncarrara/work/rltl/rltl/main/data/main_debug"
+  "remote_workspace": "/home/nicolas_carrara1u/work/rltl/rltl/main/data/main_debug"
+
+"create_datasets":
+  "exploration":
+    "type": "uniform"
+    "n_samples": 100
+
+
+"test_models":
+  "show_true_trajectories": True
+  "n_repeat_forward": 2
+  "average_accuracy": False
+  "fake_color_alpha": 0.75
+
+  "exploration":
+    "n_samples": 100
+
+"learn_classifiers":
+    "feed_forward_classifier":
+      "buffer_size_by_source_env": 10
+      "dynamics":
+        "hidden_layers": [5,5]
+        "stop":
+          "max_epochs": 100
+
+
+"learn_gans":
+  "baselines":
+    "one_gan_by_env":
+      "buffer_size_by_source_env": 50
+
+      "G_dropout": 0
+      "D_dropout": 0
+      "dynamics":
+        "D_hidden_layers": [5,5]
+        "G_hidden_layers": [5,5]
+        "stop":
+          "max_epochs": 200
+
+    "agglo_gan":
+      "dynamics":
+        "D_hidden_layers": [5,5]
+        "G_hidden_layers": [5,5]
+        "stop":
+          "max_epochs": 200
+      "buffer_size_by_source_env": 50
+      "G_dropout": 0
+      "D_dropout": 0
+
+    "hyper_nn":
+      "dynamics":
+        "D_hidden_layers": [5,5]
+        "G_hidden_layers": [5,5]
+        "stop":
+          "max_epochs": 200
+      "buffer_size_by_source_env": 50
+      "G_dropout": 0
+      "D_dropout": 0
+
+
+    "hyper_gan":
+      "dynamics":
+        "D_hidden_layers": [5,5]
+        "G_hidden_layers": [5,5]
+        "stop":
+          "max_epochs": 200
+      "buffer_size_by_source_env": 50
+      "G_dropout": 0
+      "D_dropout": 0
+
+    "hyper_gan_z_10":
+      "dynamics":
+        "D_hidden_layers": [5,5]
+        "G_hidden_layers": [5,5]
+        "stop":
+          "max_epochs": 200
+      "buffer_size_by_source_env": 50
+      "G_dropout": 0
+      "D_dropout": 0
+
+    "hyper_gan_training_True":
+      "dynamics":
+        "D_hidden_layers": [5,5]
+        "G_hidden_layers": [5,5]
+        "stop":
+          "max_epochs": 200
+      "buffer_size_by_source_env": 50
+    "hyper_nn_training_True":
+      "dynamics":
+        "D_hidden_layers": [5,5]
+        "G_hidden_layers": [5,5]
+        "stop":
+          "max_epochs": 200
+      "buffer_size_by_source_env": 50
+
+

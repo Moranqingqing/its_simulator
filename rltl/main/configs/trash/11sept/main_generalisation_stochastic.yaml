@@ -1,0 +1,10 @@
+"general":
+  "id": "main_generalisation_stochastic"
+
+"envs_collection": "gw_generalisation_stochastic"
+
+"import_models":
+  "address": "googlecloud"
+  "local_workspace": "/home/ncarrara/work/rltl/rltl/main/data/main_generalisation_stochastic"
+  "remote_workspace": "/home/nicolas_carrara1u/work/rltl/rltl/main/data/main_generalisation_stochastic"
+

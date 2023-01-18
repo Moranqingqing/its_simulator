@@ -1,0 +1,29 @@
+"general":
+  "id": "main_contextual_stochastic"
+
+"envs_collection": "gw_contextual_stochastic"
+
+"import_models":
+  "address": "googlecloud"
+  "local_workspace": "/home/ncarrara/work/rltl/rltl/main/data/main_contextual_stochastic"
+  "remote_workspace": "/home/nicolas_carrara1u/work/rltl/rltl/main/data/main_contextual_stochastic"
+
+"inferences":
+  "fake_color_alpha": 0.1
+  "n_repeat_forward": 50
+  "exploration":
+    "type": "grid"
+    "n_repeat": 1
+    "deltas": [ 0.1,0.1 ]
+    "std": 0.0
+
+"visualize_classifiers":
+  "repeat_sources": 10
+  "deltas_sources": [ 0.2,0.2 ]
+  "deltas_context": [ 0.1,0.1 ]
+  "repeat_context": 10
+
+"learn_gans":
+  "buffer_size_by_source_env": 1000
+  "stop":
+    "max_epochs": 1000

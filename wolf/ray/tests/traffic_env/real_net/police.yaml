@@ -1,0 +1,111 @@
+"ray":
+  "init":
+    "local_mode": false
+    "log_to_driver": true
+    "logging_level": "WARNING"
+  "run_experiments":
+    "experiments":
+      "debug":
+        "run": "EVALUATOR"
+        "stop":
+          "training_iteration": 5
+        "config":
+          ####################
+          ####################
+          # RL ALGO PARAMS
+          ####################
+          ####################
+          "num_gpus": 0
+          "num_workers": 1
+          "timesteps_per_iteration": 6300
+
+          ####################
+          ####################
+          # ENV
+          ####################
+          ####################
+          "horizon": null # if null, horizon will be choosen by wolfenv
+          "env": "real_world_network"
+          "env_config":
+            "render": False
+            "simulator": "traci"
+            "sim_params":
+              "restart_instance": True
+              "sim_step": 1
+              "print_warnings": False
+              "render": False
+            "env_state_params": null
+            "group_agents_params": null
+            "multi_agent_config_params":
+              "name": "independent_policy"
+              "params": {}
+            "net_params":
+              # "template":
+              #   "net": "wolf/sumo_net/shenzhen_3x3/shenzhen_3by3_loops_modified_12int_center.net.xml"
+              #   "rou": "wolf/sumo_net/shenzhen_3x3/flow_turns_rou_0506.rou.xml"
+              #   "vtype": "wolf/sumo_net/shenzhen_3x3/flow_turns_rou_0506.rou.xml"
+              #   "add": "wolf/sumo_net/shenzhen_3x3/shenzhen_3by3_loopfile_center.xml"
+              "template":
+                "net": "wolf/sumo_net/wujiang/china_net_5p_ups_LD_noUturn_police.net.xml"
+                "rou": "wolf/sumo_net/wujiang/china_flows_1hr45min_noUturn_ups.rou.xml"
+                "vtype": "wolf/sumo_net/wujiang/china_flows_1hr45min_noUturn_ups.rou.xml"
+                "add": "wolf/sumo_net/wujiang/china_net_5p_ups_loop_detectors.xml"
+              # "controlled_tls" : ['center1', 'center2', 'center3', 'center4', 'center5', 'center6', 'center7', 'center8', 'center9']
+              # "controlled_tls" : ['center1', 'center2', 'center3']
+              "controlled_tls" : ['main_center']
+            "agents_params":
+              "name": "all_the_same"
+              "params":
+                "global_reward": false
+                "default_policy":
+                  "name": "random"
+                  "params": {}
+                "action_params":
+                  "name": "MockActionConnector"
+                  "params": {}
+                "obs_params":
+                  "name": "MockObservationConnector"
+                  "params": {}
+                    # "obs_params":
+                    #   "num_history": 60
+                    #   "num_detector_group": 2
+                    # "phase_channel": true
+                # "reward_params":
+                #   "name": "AverageTravelTimeMeasurementConnector"
+                #   "params": {}
+                "reward_params":
+                  "name": "AverageTravelTimeMeasurementConnector"
+                  "params": {}
+"general":
+  "id": "main"
+  "seed": null
+  "repeat": 1
+  "is_tensorboardX": false
+  # "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "~/stockage/ray_results"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "INFO"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "INFO"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+        
+      
+    
+  
+
+

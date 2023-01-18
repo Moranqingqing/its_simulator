@@ -1,0 +1,138 @@
+{
+  "traffic_params": {
+    "factory_type": "grid",
+    "flow_params": {
+      "simulator": "traci",
+      "vehs_per_hour": 300,
+      "vehicles_params": {
+        "min_gap": 2.5,
+        "max_speed": 30,
+        "decel": 7.5,
+        "speed_mode": "right_of_way"
+      },
+      "sim_params": {
+        "restart_instance": true,
+        "sim_step": 1,
+        "render": false,
+        "print_warnings": false
+      },
+      "env_params": {
+        "horizon": 1,
+        "additional_params": {
+          "target_velocity": 50,
+          "switch_time": 3,
+          "num_observed": 2,
+          "discrete": false,
+          "tl_type": "actuated",
+          "num_local_edges": 4,
+          "num_local_lights": 4
+        }
+      },
+      "net_params": {
+        "additional_params": {
+          "speed_limit": 35,
+          "grid_array": {
+            "short_length": 300,
+            "inner_length": 300,
+            "long_length": 100,
+            "row_num": 3,
+            "col_num": 3,
+            "cars_left": 1,
+            "cars_right": 1,
+            "cars_top": 1,
+            "cars_bot": 1
+          },
+          "horizontal_lanes": 1,
+          "vertical_lanes": 1
+        }
+      }
+    }
+  },
+  "ray": {
+    "init": {
+      "local_mode": false,
+      "log_to_driver": true,
+      "logging_level": "DEBUG"
+    },
+    "run_experiments": {
+      "experiments": {
+        "exp0": {
+          "run": "DQN",
+          "stop": {
+            "training_iteration": 1
+          },
+          "config": {
+            "train_batch_size": 1,
+            "log_level": "DEBUG",
+            "num_workers": 1,
+            "num_gpus": 0,
+            "lr":  {
+              "grid_search": [
+                0.01
+              ]
+            },
+            "num_cpus_per_worker": 1,
+            "gamma": 0.999,
+            "model": {
+              "fcnet_hiddens": [
+                10
+              ]
+            },
+            "horizon": null
+          }
+        }
+      },
+      "search_alg": null,
+      "scheduler": null,
+      "with_server": false,
+      "server_port": 4321,
+      "verbose": 2,
+      "progress_reporter": null,
+      "resume": false,
+      "queue_trials": false,
+      "reuse_actors": false,
+      "trial_executor": null,
+      "raise_on_failed_trial": true,
+      "concurrent": true
+    }
+  },
+  "general": {
+    "id": "main",
+    "seed": 0,
+    "is_tensorboardX": false,
+    "workspace": "tmp/main",
+    "logging": {
+      "version": 1,
+      "disable_existing_loggers": false,
+      "formatters": {
+        "standard": {
+          "format": "[%(name)s] %(levelname)s - %(message)s"
+        }
+      },
+      "handlers": {
+        "default": {
+          "level": "INFO",
+          "formatter": "standard",
+          "class": "logging.StreamHandler"
+        }
+      },
+      "loggers": {
+        "": {
+          "handlers": [
+            "default"
+          ],
+          "level": "INFO",
+          "propagate": false
+        },
+        "some.logger.you.want.to.enable.in.the.code": {
+          "handlers": [
+            "default"
+          ],
+          "level": "ERROR",
+          "propagate": false
+        }
+      }
+    }
+  }
+}
+

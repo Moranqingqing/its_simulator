@@ -1,0 +1,103 @@
+"ray":
+  "init":
+    "local_mode": false
+    "log_to_driver": true
+    "logging_level": "WARNING"
+  "run_experiments":
+    "experiments":
+      "real_DQN_iql_0715":
+        "run": "EVALUATOR"
+        "stop":
+          "training_iteration": 1
+        "config":
+          ####################
+          ####################
+          # RL ALGO PARAMS
+          ####################
+          ####################
+          "num_gpus": 0
+          "num_workers": 1
+          "timesteps_per_iteration": 7800
+
+          ####################
+          ####################
+          # ENV
+          ####################
+          ####################
+          "horizon": null # if null, horizon will be choosen by wolfenv
+          "env": "real_world_network"
+          "env_config":
+            "render": False
+            "simulator": "traci"
+            "sim_params":
+              "restart_instance": True
+              "sim_step": 1
+              "print_warnings": False
+              "render": False
+            "env_state_params": null
+            "group_agents_params": null
+            "multi_agent_config_params":
+              "name": "independent_policy"
+              "params": {}
+            "net_params":
+              "template":
+                "net": "misc/Huawei2/sumo_net/shenzhen_3by3_loops_modified_12int_center.net.xml"
+                "rou": "misc/Huawei2/sumo_net/flow_turns_rou_0506.rou.xml"
+                "vtype": "misc/Huawei2/sumo_net/flow_turns_rou_0506.rou.xml"
+                "add": "misc/Huawei2/sumo_net/shenzhen_3by3_loopfile_center.xml"
+              # "controlled_tls" : ['center1', 'center2', 'center3', 'center4', 'center5', 'center6', 'center7', 'center8', 'center9']
+              "controlled_tls" : ['center1', 'center2', 'center3']
+            "agents_params":
+              "name": "all_the_same"
+              "params":
+                "global_reward": false
+                "default_policy":
+                  "name": "static_min"
+                  "params": {}
+                "action_params":
+                  "name": "ExtendChangePhaseConnector"
+                  "params": {}
+                "obs_params":
+                  "name": "TDTSEConnector"
+                  "params":
+                    "obs_params":
+                      "num_history": 60
+                      "num_detector_group": 2
+                    "phase_channel": true
+                "reward_params":
+                  "name": "QueueRewardConnector"
+                  "params":
+                    "stop_speed": 2
+"general":
+  "id": "main"
+  "seed": null
+  "repeat": 1
+  "is_tensorboardX": false
+  # "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "~/stockage/ray_results"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "INFO"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "INFO"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+        
+      
+    
+  
+
+

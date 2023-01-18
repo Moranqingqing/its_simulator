@@ -1,0 +1,11 @@
+"ray":
+  # "init":
+  #   "local_mode": true
+  "run_experiments":
+    "experiments":
+      "*":
+        "config":
+          "num_gpus": 1
+          "num_workers": 3
+# "general":
+#   "workspace": "/tmp/main"

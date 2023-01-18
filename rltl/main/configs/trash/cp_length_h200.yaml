@@ -1,0 +1,136 @@
+"general":
+  "id": "cp_length_super_gan_h200"
+  "seed": 0
+  "repeat": 1
+  "is_tensorboardX": false
+  "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "tmp"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+
+"envs_collection": "h200_cartpole_length_collection"
+
+"transfer":
+
+  ### DQN
+  "baseline": "dqn"
+  "eval_interval": 500 # 1000 #100
+  "log_interval": 100
+  "plot_interval": 500
+
+#  "baseline": "dqn_extra_updates"
+#  "eval_interval": 500
+#  "log_interval": 100
+#  "plot_interval": 500
+
+#  "baseline": "solution_3"
+#  "eval_interval": 10 # 1000 #100
+#  "log_interval": 2
+#  "plot_interval": 50
+  "gamma": 0.9
+  "update_network_frequency": 100
+
+  #  "eval_interval": 10 # 1000 #100
+  #  "log_interval": 2
+  #  "plot_interval": 50
+
+#  "baseline": "dyna_perfect"
+  #  "eval_interval": 10 # 1000 #100
+  #  "log_interval": 2
+  #  "plot_interval": 50
+
+  # INTERVALS #
+  "training_interval": 1
+  "update_accuracy_interval": 1
+  "check_stop_transfer_interval": 1
+  "update_model_interval": 100
+
+  "use_true_done_to_stop_prediction": True
+
+  "optimizer":
+    "name": "rmsprop"
+    "params": {}
+#    "name": "adam"
+#    "params":
+#      "lr": 0.0001
+
+
+
+  "replay_buffer_max_length": 100000
+  "num_eval_episodes": 5
+  "minibatch_size": 64
+  "num_real_steps": 20000
+  #  "shape": [2,100]
+  "shape": [2,100]
+  "action_selection_for_model_prediction": "greedy" #"random" #"greedy" # "random" # greedy
+  "initial_collect_steps": 0 #1000
+"cross_comparaison":
+  "nb_samples": 2000
+  "nb_episodes": 100
+
+"create_datasets":
+  "onehot_action": True
+  "n_episodes": 5000
+
+"gan_config":
+  "data_size_by_source_env": 5000
+  "batch_size": "max"
+  "lambda_penalize_high_entropy": null #0.
+  "sum_fake_and_real_for_entropy": null
+  "stop":
+    "max_epochs": 20000 #1500
+    "testing_loss_treshold": 0.005
+  "lambda_": 0
+  "gan_dynamics": true
+  "gan_reward": true
+  "D_n_updates": 1
+  "G_n_updates": 1
+  "D_optimizer":
+    "type": "adam"
+    "params":
+      "learning_rate": 0.0002 #2e-4
+      "beta_1": 0.5
+  #    "type": "rms"
+  #     "params":
+  #       "learning_rate": 0..001 #2e-4
+  #       "beta_1": 0.5
+  "G_optimizer":
+    "type": "adam"
+    "params":
+      "learning_rate": 0.0002 #2e-4
+      "beta_1": 0.5
+  #    "type": "rms"
+  #    "params":
+  #      "learning_rate": 0..001 #2e-4
+  #      "beta_1": 0.5
+  "use_bce_tf_function": False
+  "factorize_fake_output": False
+  "type": "super_gan" # "wasserstein"
+  #  "lipchitz_method": "clipping",
+  "z_size": 1 #5
+  "D_hidden_layers": [ 512, 256]
+  "G_hidden_layers": [ 512, 256]
+  "D_activation": "tanh"
+  "G_activation": "tanh"
+  "negative_sampling":
+    "grid_search":
+      - null
+

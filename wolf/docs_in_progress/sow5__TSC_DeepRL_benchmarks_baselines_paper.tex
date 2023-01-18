@@ -1,0 +1,228 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{Traffic Signal Control benchmarks}
+\author{sow5}
+\date{December 2020}
+
+\usepackage{appendix}
+\usepackage{tikz}
+
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    Uprising for reinforcement learning in TSC. Explain quickly why. But no benchmarks papers so far. We introduce benchmark envs , reward, state, and results. We show that SOTA MARL algorithms fail at learning good policies.
+\end{abstract}
+
+\section{Introduction}
+
+
+
+\section{Background}
+
+
+    \subsection{The traffic problem}
+    
+        % What is the traffic problem
+        % explain cycle-based/second-based, explain loop detector/video feed. 
+    
+        \subsubsection{Metrics}
+            % Type of metrics (tt, flow ...)
+        \subsubsection{Rule-based agents}
+        
+            \paragraph{Random, Fickle, Min, and Max}
+            Min: (Second-based) Change after min time elapses
+            
+            Max: (Second-based) Change after max time elapses
+            
+            Random: (Second-based) Choose a random action every second. Almost identical to Min policy to 
+            
+            Fickle: (Second-based) Choose a random time between min and max inclusive to change
+            
+            Random and Fickle (pie-based): Make a random pie
+            
+            \paragraph{Offset Agent}
+            
+            \paragraph{Max pressure}
+            
+        \subsubsection{Limits}
+            Rule-based agent can't adapt, what if demand suddenly change? What if there is no platoon? What about TSC at night? ---- Reinforcement Learning.
+            
+            Also we need coordination + Curse of dimensionality in action space + infrastructure problem ---- multi agent RL
+            
+            In the next section we will introduce what we need to overcome those limits...
+            
+    \subsection{Multi-agents Reinforcement Learning}
+
+        % POMDP
+        
+        % generic marl algo
+            % IQL
+            % VDN
+            % QMIX
+        % traffic marl algo
+            % MARLIN
+
+\section{Traffic networks}
+
+    In some traffic configurations, where for example, the demand follows a simple pattern, rule-based agents might be enough while in other configurations, adaptable learning agents might be a necessity. As a result, to properly evaluate our agents, we design a predefined collection of traffic environments. The variable parameters are the demand and the layout.
+
+    \paragraph{Demand}
+    % TODO (parth): mention about another case where the demand pattern is quite long, which is for the demand that is used from surveys and OD matrices. 
+    % In that case sim time is useful in remembering the patterns, but without sim time, the agent might remember some of patterns to identify where is its current location within the pattern, and how would the future demand look like.
+    
+        We propose four types of demand patterns:
+    
+        \begin{itemize}
+            \item Platoon (P): a continuous flow of cars if appearing for a short period of time. In this situation, offset approaches should be optimal.
+            \item Bernoulli (B): a every time step, a car is appearing randomly following a Bernoulli distribution.
+            \item Gaussian (G): a every time step, the parameter of the aforementioned Bernoulli distribution is sampled from a Gaussian distribution.
+            \item Poisson (S): cars are generated randomly, the waiting time between a car and its following car is distributed exponentially. The result is a number of independent Poisson processes (one for each edge that generates cars)
+        \end{itemize}
+        
+        In real situations, demand might be changing over the time of the day. So we will distinguish between stationary and non stationary demands. To keep things simple, we define three types:
+        
+        \begin{itemize}
+            \item Stationary (S): the demand stay the same for the whole simulation.
+            \item Rushes (Ru): we simulate the morning and night rush. The whole simulation follows one of the aforementioned demand, but at two predefined times (far away enough to think of morning and night rush) of the simulation, there are outbursts of traffic.
+            \item Random Rushes (RuR): same as NS, but the two outburst times are randomly distributed at the beginning of each simulation. In this situation, tracking the current time is not enough.
+        \end{itemize}
+        
+        In some part of real networks, some links are subject to heavy traffic more than others. To acknowledge the asymmetry in the demand, we differentiate three (four?///) situations:
+        
+        \begin{itemize}
+            \item Unique (U): the traffic comes from a single link, with a unique direction.
+            \item Master-Slaves (MS): same as unique, but at rare occasions, cars come from other endpoints.
+            \item Full (Fu): the demand is the same in all directions and all links.
+            \item Mixed (M): demand depends on the direction (may be zero in some directions)
+        \end{itemize}
+
+    \paragraph{Layout}
+    
+    In order to test coordination of multiples agents, we design networks with several intersections. We propose to create a fake (F) grid-shape network with $n \times m$ intersections. The grid can be asymmetrical such that an lucky initialisation of the traffic lights and a good offset cannot be enough to solve the coordination problem. We denote Sy for symmetric and ASy for asymmetric.
+    
+    Finally, we design a layout based on a real network (R). The demand is predefined by a demand matrix. As the layout is fixed, we can only change the number of intersections $n$.
+    
+    Here we list some examples of environments:
+    
+    \begin{itemize}
+        \item F\_Sy\_1x3\_S\_MS\_P: fake symmetric grid-shaped 1x3 network with stationary and master-slave platoon-like demand.
+        \item R\_3: real-based network with 3 intersections. We cannot configure the demand as it comes from a demand matrix.
+    \end{itemize}
+    
+    Some pre-configured environment exists, number is increasing w.r.t. the difficulty; for example benchmark\_0, benchmark\_1 ...
+    
+    
+
+\section{Agents}
+    % talk about all the rewards
+        % queue length, tt ...
+    % talk about state representation
+        % tdtse etc
+    % talk about action space / time based vs cycle based
+    % define all the agents with a tabular (learning/rule-based, state, action-space, reward etc)
+
+\section{Experiments}
+
+    % show results (tabular), we should also show the return progression w.r.t learning steps/samples
+    % visualizations (time-space diagrams)
+
+\section{Related work}
+
+    % does benchmark papers for TSC already exist? not sure if this section is relevant.
+
+\section{Conclusion}
+
+\appendix
+\section{Several ideas for more granular artificial benchmarks}
+
+\def\road_color{white!70!black}
+\def\car_color{black}
+\subsection{Zerg-rush}
+\[\begin{tikzpicture}[scale=0.5]
+    % Roads
+    \draw[color=\road_color, fill=\road_color] 
+        (-10, 3) -- (10, 3) -- (10, -2) -- (-10, -2) -- (-10, 3);
+    \foreach \y in {-1, 0, 1, 2} {
+        \draw[color=black] (-10, \y) -- (10, \y);
+    }
+    \draw[color=\road_color, fill=\road_color]
+        (-3, -8) -- (-3, 8) -- (-2, 8) -- (-2,-8) -- (-3, -8);
+    \draw[color=\road_color, fill=\road_color]
+        (3, -8) -- (3, 8) -- (4, 8) -- (4,-8) -- (3, -8);
+    
+    % Lights
+    \node at (-2.5,0.5) {$L$};
+    \node at (3.5,0.5) {$L$};
+    
+    % Cars
+    \foreach \y in {-1.5, -0.5, 0.5, 1.5, 2.5} {
+        \foreach \x in {-9.5, -8.5,..., -4.5} {
+            \draw[fill=\car_color] (\x,\y) circle(0.4);
+        }
+    }
+    
+    \draw[->, thick] (-8, -4) -- (-5, -4);
+    \node at (-6.5, -5) {Large sudden demand};
+\end{tikzpicture}\]
+$L$ denotes a traffic light and a circle denotes a car.
+
+Multi-lane road with two intersections and sudden large demand impulse. 
+
+Place $n$ traffic lights, and test coordination (what state information is available to the lights? How many of their neighbours do the lights have access to?). Do the traffic lights coordinate to make a green wave? 
+
+Make variants with different timing of cars arriving at the side-roads.
+
+Try periodic and aperiodic impulses.
+
+\subsection{Zerg-rush-with-offset}
+\[\begin{tikzpicture}[scale=0.5]
+    % Roads
+    \foreach \y in {-3,-1,1,3} {
+        \draw[color=\road_color, fill=\road_color]
+            (-10,\y) -- (10,\y) -- (10,\y+1) -- (-10,\y+1) -- (-10,\y);
+    }
+    \foreach \x in {-3,-1,1,3} {
+        \draw[color=\road_color, fill=\road_color]
+            (\x,-8) -- (\x,8) -- (\x+1,8) -- (\x+1,-8) -- (\x,-8);
+    }
+    
+    % Lights
+    \node at (3.5,3.5) {$L$};
+    \node at (1.5,1.5) {$L$};
+    \node at (-0.5,-0.5) {$L$};
+    \node at (-2.5,-2.5) {$L$};
+    
+    % Cars
+    \foreach \y in {-2.5, -0.5, 1.5, 3.5} {
+        \foreach \x in {-9.5, -8.5,..., -4.5} {
+            \draw[fill=\car_color] (\x,\y) circle(0.4);
+        }
+    }
+    
+    \draw[->, thick] (-8, -4) -- (-5, -4);
+    \node at (-6.5, -5) {Large sudden demand};
+\end{tikzpicture}\]
+
+$L$ denotes a traffic light and a circle denotes a vehicle.
+
+Each light should have access to the state of each other light, but they should all have a limited cone of vision. Also, each light should see all four roads.
+
+Tests cooperation: Do the later traffic lights receive information regarding the rush from the earlier traffic lights?
+
+Time the demand on the verticals so that the optimal behaviour is to learn an offset.
+
+\subsection{Single intersection}
+\subsubsection{Uniform or Poisson demand} The optimal behaviour (I think: Ilia) is that the proportion of time the light spends green NS to the time of light spends green EW should be equal to the proportion of demand NS to the demand EW.
+
+\subsubsection{One-way demand}
+If there is demand coming one way, the traffic light should learn the max policy for that direction and the min policy for the other direction.
+
+\subsection{Circle}
+Similar to one the Flow benchmarks. Can we coordinate cars on a circle to spread apart using several traffic lights instead of a control car?
+
+
+\end{document}

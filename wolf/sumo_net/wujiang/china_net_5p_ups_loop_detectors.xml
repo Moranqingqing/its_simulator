@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 03/04/20 05:10:27 by Eclipse SUMO netedit Version 1.2.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="D:\Projects\cycle_based\china_net_5p_ups_LD.net.xml"/>
+    </input>
+
+    <output>
+        <output-file value="D:\Projects\cycle_based\china_net_5p_ups_LD.net.xml"/>
+    </output>
+
+    <processing>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="false"/>
+    </processing>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="0"/>
+        <junctions.limit-turn-speed value="-1"/>
+        <rectangular-lane-cut value="false"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="false"/>
+    </pedestrian>
+
+    <netedit>
+        <additional-files value="D:\Projects\cycle_based\china_net_5p_ups_loop_detectors.xml"/>
+    </netedit>
+
+</configuration>
+-->
+
+<additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">
+    <!-- <e1Detector id="e1Dmain_center_west_up2_1" lane="center1_WEST_3_1" pos="2.61" freq="900.00" file="e1Detector_center1_WEST_3_1_32.xml"/> -->
+    <e1Detector id="main_center_east_dn_1" lane="center1_east_c_in_edge_4_0" pos="20.10" freq="900.00" file="e1Detector_center1_east_c_in_edge_4_0_9.xml"/>
+    <e1Detector id="main_center_east_dn_2" lane="center1_east_c_in_edge_4_1" pos="20.22" freq="900.00" file="e1Detector_center1_east_c_in_edge_4_1_10.xml"/>
+    <e1Detector id="main_center_east_dn_3" lane="center1_east_c_in_edge_4_2" pos="20.19" freq="900.00" file="e1Detector_center1_east_c_in_edge_4_2_11.xml"/>
+    <e1Detector id="main_center_east_rt_0" lane="gneE18_0" pos="5.52" freq="900.00" file="e1Detector_gneE18_0_26.xml"/>
+    <!-- <e1Detector id="main_center_east_up1_1" lane="center1_EAST_ENTRANCE_0" pos="6.55" freq="900.00" file="e1Detector_center1_EAST_ENTRANCE_0_19.xml"/>
+    <e1Detector id="main_center_east_up1_2" lane="center1_EAST_ENTRANCE_1" pos="6.60" freq="900.00" file="e1Detector_center1_EAST_ENTRANCE_1_20.xml"/>
+    <e1Detector id="main_center_east_up1_3" lane="center1_EAST_ENTRANCE_2" pos="6.61" freq="900.00" file="e1Detector_center1_EAST_ENTRANCE_2_21.xml"/>
+    <e1Detector id="main_center_east_up1_i" lane="in_2_ENTRANCE_0" pos="32.01" freq="900.00" file="e1Detector_in_2_ENTRANCE_0_29.xml"/>
+    <e1Detector id="main_center_east_up1_o" lane="center1_EAST_out_0" pos="4.23" freq="900.00" file="e1Detector_center1_EAST_out_0_28.xml"/> -->
+    <e1Detector id="main_center_east_up2_0" lane="center1_EAST_3.28_0" pos="7.05" freq="900.00" file="e1Detector_center1_EAST_3.28_0_34.xml"/>
+    <e1Detector id="main_center_east_up2_1" lane="center1_EAST_3.28_1" pos="7.65" freq="900.00" file="e1Detector_center1_EAST_3.28_1_35.xml"/>
+    <e1Detector id="main_center_east_up2_2" lane="center1_EAST_3.28_2" pos="7.90" freq="900.00" file="e1Detector_center1_EAST_3.28_2_36.xml"/>
+    <e1Detector id="main_center_east_up2_3" lane="center1_EAST_3.28_3" pos="7.32" freq="900.00" file="e1Detector_center1_EAST_3.28_3_37.xml"/>
+    <e1Detector id="main_center_north_dn_1" lane="center1_north_c_in_edge_6_0" pos="21.01" freq="900.00" file="e1Detector_center1_north_c_in_edge_6_0_3.xml"/>
+    <e1Detector id="main_center_north_dn_2" lane="center1_north_c_in_edge_6_1" pos="21.44" freq="900.00" file="e1Detector_center1_north_c_in_edge_6_1_4.xml"/>
+    <e1Detector id="main_center_north_dn_3" lane="center1_north_c_in_edge_6_2" pos="21.66" freq="900.00" file="e1Detector_center1_north_c_in_edge_6_2_5.xml"/>
+    <e1Detector id="main_center_north_rt_0" lane="gneE19_0" pos="9.33" freq="900.00" file="e1Detector_gneE19_0_25.xml"/>
+    <e1Detector id="main_center_north_up1_1" lane="center1_NORTH_4_0" pos="8.12" freq="900.00" file="e1Detector_center1_NORTH_4_0_22.xml"/>
+    <e1Detector id="main_center_north_up1_2" lane="center1_NORTH_4_1" pos="8.19" freq="900.00" file="e1Detector_center1_NORTH_4_1_23.xml"/>
+    <e1Detector id="main_center_north_up1_3" lane="center1_NORTH_4_2" pos="7.70" freq="900.00" file="e1Detector_center1_NORTH_4_2_24.xml"/>
+    <!-- <e1Detector id="main_center_north_up2_0" lane="center1_NORTH_5_0" pos="2.66" freq="900.00" file="e1Detector_center1_NORTH_5_0_45.xml"/>
+    <e1Detector id="main_center_north_up2_1" lane="center1_NORTH_5_1" pos="2.79" freq="900.00" file="e1Detector_center1_NORTH_5_1_44.xml"/>
+    <e1Detector id="main_center_north_up2_2" lane="center1_NORTH_5_2" pos="3.04" freq="900.00" file="e1Detector_center1_NORTH_5_2_43.xml"/>
+    <e1Detector id="main_center_north_up2_3" lane="center1_NORTH_5_3" pos="3.31" freq="900.00" file="e1Detector_center1_NORTH_5_3_42.xml"/> -->
+    <e1Detector id="main_center_south_dn_1" lane="center1_south_c_in_edge_4_0" pos="19.38" freq="900.00" file="e1Detector_center1_south_c_in_edge_4_0_8.xml"/>
+    <e1Detector id="main_center_south_dn_2" lane="center1_south_c_in_edge_4_1" pos="19.00" freq="900.00" file="e1Detector_center1_south_c_in_edge_4_1_7.xml"/>
+    <e1Detector id="main_center_south_dn_3" lane="center1_south_c_in_edge_4_2" pos="19.28" freq="900.00" file="e1Detector_center1_south_c_in_edge_4_2_6.xml"/>
+    <e1Detector id="main_center_south_rt_0" lane="gneE9_0" pos="4.95" freq="900.00" file="e1Detector_gneE9_0_27.xml"/>
+    <e1Detector id="main_center_south_up1_1" lane="center1_SOUTH_2_0" pos="51.27" freq="900.00" file="e1Detector_center1_SOUTH_2_0_18.xml"/>
+    <e1Detector id="main_center_south_up1_2" lane="center1_SOUTH_2_1" pos="51.48" freq="900.00" file="e1Detector_center1_SOUTH_2_1_17.xml"/>
+    <e1Detector id="main_center_south_up1_3" lane="center1_SOUTH_2_2" pos="51.48" freq="900.00" file="e1Detector_center1_SOUTH_2_2_16.xml"/>
+    <!-- <e1Detector id="main_center_south_up2_0" lane="center1_SOUTH_3_0" pos="3.18" freq="900.00" file="e1Detector_center1_SOUTH_3_0_41.xml"/>
+    <e1Detector id="main_center_south_up2_1" lane="center1_SOUTH_3_1" pos="3.23" freq="900.00" file="e1Detector_center1_SOUTH_3_1_40.xml"/>
+    <e1Detector id="main_center_south_up2_2" lane="center1_SOUTH_3_2" pos="3.58" freq="900.00" file="e1Detector_center1_SOUTH_3_2_39.xml"/>
+    <e1Detector id="main_center_south_up2_3" lane="center1_SOUTH_3_3" pos="3.34" freq="900.00" file="e1Detector_center1_SOUTH_3_3_38.xml"/> -->
+    <e1Detector id="main_center_west_dn_1" lane="center1_west_c_in_edge_4_0" pos="18.13" freq="900.00" file="e1Detector_center1_west_c_in_edge_4_0_0.xml"/>
+    <e1Detector id="main_center_west_dn_2" lane="center1_west_c_in_edge_4_1" pos="17.84" freq="900.00" file="e1Detector_center1_west_c_in_edge_4_1_1.xml"/>
+    <e1Detector id="main_center_west_dn_3" lane="center1_west_c_in_edge_4_2" pos="17.84" freq="900.00" file="e1Detector_center1_west_c_in_edge_4_2_2.xml"/>
+    <e1Detector id="main_center_west_rt_0" lane="center1_west_center1_south_0" pos="2.93" freq="900.00" file="e1Detector_center1_west_center1_south_0_12.xml"/>
+    <e1Detector id="main_center_west_up1_1" name="main_center_west_up1_1" lane="center1_WEST_2_0" pos="5.22" freq="900.00" file="e1Detector_center1_WEST_2_0_13.xml"/>
+    <e1Detector id="main_center_west_up1_2" name="main_center_west_up1_2" lane="center1_WEST_2_1" pos="5.06" freq="900.00" file="e1Detector_center1_WEST_2_1_14.xml"/>
+    <e1Detector id="main_center_west_up1_3" lane="center1_WEST_2_2" pos="5.22" freq="900.00" file="e1Detector_center1_WEST_2_2_15.xml"/>
+    <!-- <e1Detector id="main_center_west_up2_0" lane="center1_WEST_3_0" pos="2.35" freq="900.00" file="e1Detector_center1_WEST_3_0_33.xml"/>
+    <e1Detector id="main_center_west_up2_2" lane="center1_WEST_3_2" pos="2.77" freq="900.00" file="e1Detector_center1_WEST_3_2_31.xml"/>
+    <e1Detector id="main_center_west_up2_3" lane="center1_WEST_3_3" pos="3.05" freq="900.00" file="e1Detector_center1_WEST_3_3_30.xml"/> -->
+</additional>

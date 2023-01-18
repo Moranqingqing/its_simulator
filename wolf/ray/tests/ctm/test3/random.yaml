@@ -1,0 +1,62 @@
+"ray":
+  "init":
+    "local_mode": true
+    "log_to_driver": true
+    "logging_level": "WARNING"
+  "run_experiments":
+    "experiments":
+      "random":
+        "run": "EVALUATOR"
+        "stop":
+          "training_iteration": 1
+        "config":
+          "num_gpus": 0
+          "num_workers": 1
+          "timesteps_per_iteration": 10000
+
+          ####################
+          ####################
+          # ENV
+          ####################
+          ####################
+
+          "gamma": 0.99 # 0.995
+          "horizon": null # if null, horizon will be choosen by env
+          "env": "ctm_test3"
+          "env_config":
+            "agent_config":
+              "type": "multi-agent"
+              "group_agent": false
+              "with_env_state": false
+              "default_policy":
+                "name": "random"
+                "params": {}
+"general":
+  "id": "main"
+  "seed": null
+  "repeat": 1
+  "is_tensorboardX": false
+  "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "/media/ncarrara/stockage/ray_results/test3"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+
+

@@ -1,0 +1,126 @@
+"factory_type": "grid"
+"ray":
+  "init":
+    "local_mode": false
+    "log_to_driver": true
+    "logging_level": "DEBUG"
+    "num_cpus": 8
+  "run_experiments":
+    "experiments":
+      "evaluate_random_policy":
+        "run": "EVALUATOR"
+        "stop":
+          "training_iteration": 1
+        "config":
+          "log_level": "DEBUG"
+          "num_workers": 1
+          "num_gpus": 0
+          "timesteps_per_iteration": 1000
+          "env_config":
+            "agents_params":
+              "grid_search":
+                - "module": "sow45.world.environments.traffic.agents.agent_factory"
+                  "class_name": "OneTlAgentByIntersection"
+                  "params":
+                    "default_policy":
+                      "module": "sow45.utils.policies.static_policy"
+                      "class_name": "StaticPolicy"
+                      "params": {}
+                    "action_params":
+                      "module": "sow45.world.environments.traffic.agents.connectors.action.exchange_change_phase"
+                      "class_name": "ExtendChangePhaseConnector"
+                      "params":
+                        "phases": ["GrGr","rGrG"]
+                        "tl_params":
+                          "green_min": 60
+                          "green_max": 60
+                          "yellow_max": 3
+                          "red_max": 2
+                    "obs_params":
+                      "module": "sow45.world.environments.traffic.agents.connectors.observation.tdtse"
+                      "class_name": "TDTSEConnector"
+                      "params":
+                        "tl_logic": ["GrGr","rGrG"]
+                        "obs_params":
+                          "num_history": 60
+                          "detector_position": [5, 100]
+                        "phase_channel": true
+                    "reward_params":
+                      "module": "sow45.world.environments.traffic.agents.connectors.reward.queue_reward_connector"
+                      "class_name": "QueueRewardConnector"
+                      "params":
+                        "stop_speed": 0.3
+                        "n": 100
+                        "save_data": true
+            "detector_params":
+              "positions": [-5, -100]
+              "frequency": 100
+            "simulator": "traci"
+            "probability": 0.3
+            "vehicles_params":
+              "min_gap": 2.5
+              "max_speed": 30
+              "decel": 7.5
+              "speed_mode": "right_of_way"
+            "sim_params":
+              "restart_instance": true
+              "sim_step": 1
+              "render": true
+              "print_warnings": false
+            "env_params":
+              "warmup_steps": 100
+              "horizon": 1000
+              "additional_params":
+                "target_velocity": 50
+                "switch_time": 3
+                "num_observed": 2
+                "discrete": false
+                "tl_type": "actuated"
+                "num_local_edges": 4
+                "num_local_lights": 4
+            "net_params":
+              "additional_params":
+                "speed_limit": 35
+                "grid_array":
+                  "short_length": 300
+                  "inner_length": 300
+                  "long_length": 100
+                  "row_num": 1
+                  "col_num": 1
+                  "cars_left": 1
+                  "cars_right": 1
+                  "cars_top": 1
+                  "cars_bot": 1
+                "horizontal_lanes": 1
+                "vertical_lanes": 1
+"general":
+  "id": "main"
+  "seed": 0
+  "is_tensorboardX": false
+  "workspace": "tmp/main"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "INFO"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "INFO"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+        
+      
+    
+  
+
+

@@ -1,0 +1,105 @@
+{
+  "env_params": {
+    "factory_type": "grid",
+    "params": {
+      "simulator": "traci",
+      "vehs_per_hour": 300,
+      "vehicles_params": {
+        "min_gap": 2.5,
+        "max_speed": 30,
+        "decel": 7.5,
+        "speed_mode": "right_of_way"
+      },
+      "sim_params": {
+        "restart_instance": true,
+        "sim_step": 1,
+        "render": false,
+        "print_warnings": false
+      },
+      "env_params": {
+        "horizon": 400,
+        "additional_params": {
+          "target_velocity": 50,
+          "switch_time": 3,
+          "num_observed": 2,
+          "discrete": false,
+          "tl_type": "actuated",
+          "num_local_edges": 4,
+          "num_local_lights": 4
+        }
+      },
+      "net_params": {
+        "additional_params": {
+          "speed_limit": 35,
+          "grid_array": {
+            "short_length": 300,
+            "inner_length": 300,
+            "long_length": 100,
+            "row_num": 3,
+            "col_num": 3,
+            "cars_left": 1,
+            "cars_right": 1,
+            "cars_top": 1,
+            "cars_bot": 1
+          },
+          "horizontal_lanes": 1,
+          "vertical_lanes": 1
+        }
+      }
+    }
+  },
+  "ray": {
+    "init": {
+      "local_mode": false,
+      "log_to_driver": true,
+      "num_cpus": 8,
+      "num_gpus": 1
+    },
+    "default_algorithm": "PPO",
+    "config": {
+      "gamma": 0.999
+    },
+    "run_experiments": {
+      "verbose": 0
+    }
+  },
+  "general": {
+    "id": "simple_main",
+    "seed": 0,
+    "is_tensorboardX": false,
+    "workspace": "tmp/simple_main",
+    "logging": {
+      "version": 1,
+      "disable_existing_loggers": false,
+      "formatters": {
+        "standard": {
+          "format": "[%(levelname)s] %(message)s "
+        }
+      },
+      "handlers": {
+        "default": {
+          "level": "INFO",
+          "formatter": "standard",
+          "class": "logging.StreamHandler"
+        }
+      },
+      "loggers": {
+        "": {
+          "handlers": [
+            "default"
+          ],
+          "level": "INFO",
+          "propagate": false
+        },
+        "some.logger.you.want.to.enable.in.the.code": {
+          "handlers": [
+            "default"
+          ],
+          "level": "ERROR",
+          "propagate": false
+        }
+      }
+    }
+  }
+}
+

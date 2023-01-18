@@ -1,0 +1,143 @@
+"general":
+  "id": "main_easy_discrete_contextual_stochastic"
+  "run_tensorboard": True
+
+"envs_collection": "gw_easy_discrete_contextual_stochastic"
+
+"import_models":
+  "address": "googlecloud"
+  "local_workspace": "/home/ncarrara/work/rltl/rltl/main/data/main_easy_discrete_contextual_stochastic"
+  "remote_workspace": "/home/nicolas_carrara1u/work/rltl/rltl/main/data/main_easy_discrete_contextual_stochastic"
+
+"create_datasets":
+  "save_source_trajectories": True
+  "alpha": 0.1
+  "exploration":
+    "type": "grid" # "random"
+    "n_repeat": 100
+    "deltas": [ 0.1,0.1 ]
+    "std": 0.0
+
+
+"inferences":
+  "plot_ground_truth": False
+#  "plot_ground_truth": True
+  "repeat_bayesian_inferences": 10
+  "fake_color_alpha": 0.5
+#  "n_repeat_forward": 300
+  "n_repeat_forward": 100
+  "sigma_eps": 9999
+  "alpha": 0.01
+  "exploration":
+    "type": "grid"
+    "n_repeat": 1
+    "deltas": [ 0.2,0.2 ]
+    "std": 0.0
+
+#"create_datasets":
+#  "save_source_trajectories": True
+#  "alpha": 0.1
+#  "exploration":
+#    "type": "uniform"
+#    "n_samples": 50000
+
+"visualize_classifiers":
+  #############################
+  # red squares represent  E_j E_i NN(s,a,s_j)^i_k
+  # where k is the dimension of the context vector we are plotting
+  # j is the number of time (s,a) is samples. Make sense for stochastic tasks
+  # i is the number of time the network inferes a context vector. Make sense for bayesian networks.
+  # ====
+  # blue squares represent the variance, ie E_j Var_i NN(s,a,s_j)^i_k
+  # feedforward will show dark squares whill bayesian might show
+  # blue when the sample if not present in the learning dataset
+  # ====
+  # Green lines correspond to the trajectories of the task k
+  # ====
+  # White lines correspond to the trajectories of the task we are solving.
+  # ====
+  # if green and white are similar, the square should be more red
+  # if green and white are different, the square should be darker
+  #
+  #############################
+  # white and green samples
+  "repeat_sources": 10
+  "deltas_sources": [ 0.2,0.2 ]
+  # j samples
+  "repeat_context": 10
+  "deltas_context": [ 0.1,0.1 ]
+  # i
+  "repeat_bayesian_inference": 10
+
+
+
+"learn_gans":
+  # COMMON PARAMETERS
+  "classifier_baseline": "full_bayesian"
+  "interval_verbose_minibatch": 100
+  "buffer_size_by_source_env": 2500
+  "interval_eval_epoch": 1
+  "interval_save_models": 1
+  "verbose": True
+  "ratio_train_to_test": 0.95
+  "output_neurons": [ 2 ]
+  "sum_fake_and_real_for_entropy": null
+  "learn_targets": True
+  "use_bce_tf_function": False
+  "factorize_fake_output": True
+  "D_activation": "relu"
+  "G_activation": "relu"
+  "non_saturing": True
+  "stop":
+    "max_epochs": 500 # 1000
+    "testing_loss_treshold": 0.005
+    "training_loss_treshold": 0.005
+  "D_n_updates": 1
+  "G_n_updates": 3
+  "D_hidden_layers": [ 256,128,64 ]
+  "G_hidden_layers": [ 256,128,64 ]
+  "D_optimizer":
+    "type": "rms"
+    "params": { }
+  "G_optimizer":
+    "type": "rms"
+    "params": { }
+  "G_output_activations": [ 'sigmoid' ]
+  "lambda_penalize_high_entropy": 0
+  "G_batch_norm": False
+  "D_batch_norm": False
+  "noisy_input_context_vector": 0
+  "lambda_": 0
+  "batch_size": 256
+  # BASELINES
+  "baselines":
+    "hyper_cvae_for_contextual_stochastic":
+      "interval_inferences": 10
+      "interval_save_model": 10
+      "interval_eval_epoch": 10
+      "generative_type": "CVAE"
+      "buffer_size_by_source_env": 2500
+      "CVAE_optimizer":
+        "type": "adam"
+        "params":
+          "learning_rate": 0.01
+      "stop":
+        "max_epochs": 2500 # 1000
+        "testing_loss_treshold": 0.005
+        "training_loss_treshold": 0.005
+      "encoder_hiddens": [ 250,250,250 ]
+      "decoder_hiddens": [ 100,100 ]
+      "encoder_activation": "relu"
+      "decoder_activation": "relu"
+      "reconstruction_loss": "mse"
+      #      "reconstruction_loss": "cross_entropy"
+      "kl_weight": "auto"
+      "sigmoid_output": True
+      "batch_size": 32
+      "type": "hyper_vae"
+      "learn_with_onehot_context": True
+      "z_size": 8
+      "color": [ 1,0,0,1 ]
+      "dynamics":
+        "G_dropout": 0
+        "D_dropout": 0

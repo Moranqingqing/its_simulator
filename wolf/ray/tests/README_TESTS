@@ -1,0 +1,4 @@
+ctm test0
+
+global agent should reach -12 with type_reward=occupation  and compressed_cars_state=False. TL should be green on the horizontal direction (WEST/EAST).
+Optimal is -8.7 but I do not think it is achievable

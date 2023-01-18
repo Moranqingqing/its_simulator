@@ -1,0 +1,19 @@
+"general":
+  "id": "main_swap"
+
+"envs_collection": "gw_swap"
+
+"import_models":
+  "address": "googlecloud"
+  "local_workspace": "/home/ncarrara/work/rltl/rltl/main/data/main_swap"
+  "remote_workspace": "/home/nicolas_carrara1u/work/rltl/rltl/main/data/main_swap"
+
+"inferences":
+  "average_accuracy": False
+  "fake_color_alpha": 0.01
+  "n_repeat_forward": 1000
+  "exploration":
+    "type": "grid"
+    "n_repeat": 1
+    "deltas": [0.2,0.2]
+    "std": 0.0

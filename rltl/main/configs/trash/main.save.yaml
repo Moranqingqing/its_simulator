@@ -1,0 +1,767 @@
+"args":
+  "show_plots": True
+  "dont_load_models": True
+#  "jobs_list":
+#    - "create_datasets"
+    #    - "test_models"
+    #    - "env_statistics"
+    #    - "import_results"
+#      - "import_models"
+#    - "learn_gans"
+#    - "learn_classifiers"
+#      - "cross_comparaison_classifier"
+#      - "inferences"
+  #    - "print_test_models_results"
+  #    - "transfer"
+#  "classifer_baselines":
+#    - "feed_forward_classifier"
+  #  "envs_to_test": []
+#  "gan_baselines": []
+#    #    - "all"
+#    - "wgan"
+  #    - "hyper_nn"
+  #    - "hyper_nn_training_True"
+  #    - "agglo_gan"
+  #    - "hyper_gan_z_10"
+  #    - "one_gan_by_env"
+#  "envs_to_generate":
+    #    - "Gridworld_sources-0"
+#    - "all"
+#  "gan_single_envs":
+#    - "Gridworld_sources-0"
+  #    - "all"
+#  "transfer_baselines":
+#    - "dqn"
+
+"cross_comparaison":
+  "exploration":
+    "type": "grid"
+    "n_repeat": 5
+    "deltas": [0.2,0.2]
+    "std": 0.0
+#  "nb_episodes": 100
+
+
+"create_datasets":
+  "save_source_trajectories": True
+  "alpha": 0.1
+  "exploration":
+    "type": "uniform"
+    "n_samples": 100000
+
+
+"inferences":
+  "n_repeat_forward": 100
+  "average_accuracy": False
+  "fake_color_alpha": 0.05
+  "exploration":
+    "type": "grid"
+    "n_repeat": 1
+    "deltas": [0.05,0.05]
+    "std": 0.0
+
+"env_statistics":
+  "alpha": 0.1
+  "exploration":
+    #    "type": "random"
+    #    "n_episodes": 100
+    #    "type": "uniform"
+    #    "n_samples": 100
+    "type": "grid" # "random"
+    "n_samples": 5000
+    "deltas": [0.2,0.2]
+    "std": 0.0
+
+"learn_classifiers":
+#  "buffer_size_by_source_env": 10000
+  "buffer_size_by_source_env": 2500
+#  "buffer_size_by_source_env": 5000
+  "interval_eval_epoch": 100
+  "interval_save_models": 100
+  "verbose": True
+  "ratio_train_to_test": 0.95
+  "G_output_neurons": [2]
+  "batch_size": "max"
+  "use_bce_tf_function": False
+  "baselines":
+
+    "feed_forward_classifier":
+      "color": [0.5,0,0,1]
+      "type": "classifier"
+      "output_activations": ['sigmoid']
+      "batch_norm": False
+#      "dropout": 0.5
+      "dropout": 0.5
+      "activation": "relu"
+
+      "dynamics":
+#        "hidden_layers": [256,128,64]
+        "hidden_layers": [128,64]
+        "stop":
+          "max_epochs": 5000
+          "testing_loss_treshold": 0.005
+          "training_loss_treshold": 0.005
+        "optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.01
+
+
+
+"learn_gans":
+  "buffer_size_by_source_env": 2500
+  "interval_eval_epoch": 100
+  "interval_save_models": 100
+  "verbose": True
+  "ratio_train_to_test": 0.95
+  "G_output_neurons": [2]
+  "batch_size": "max"
+  "sum_fake_and_real_for_entropy": null
+  "learn_targets": True
+  "use_bce_tf_function": False
+  "factorize_fake_output": True
+  "stop":
+    "max_epochs": 5000
+    "testing_loss_treshold": 0.005
+    "training_loss_treshold": 0.005
+
+  "baselines":
+
+
+    "hyper_gan_z_10_wgan":
+      "dynamics":
+        "D_hidden_layers": [256,128,64]
+        "G_hidden_layers": [256,128,64]
+
+        "D_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+        "G_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+      "classifier_baseline": "feed_forward_classifier"
+      "noisy_input_context_vector": 0
+      "wasserstein":
+        "lipchitz_method": "clipping"
+      "lambda_penalize_high_entropy": 0
+      "color": [1,0.3,0.3,1]
+      "lambda_": 0
+      "G_output_activations": ['sigmoid']
+
+      "z_size": 5
+      "G_batch_norm": False
+      "D_batch_norm": False
+      "G_dropout": 0
+      "D_dropout": 0
+      "D_n_updates": 5
+      "G_n_updates": 1
+      "type": "hyper_gan"
+      "D_activation": "relu"
+      "G_activation": "relu"
+
+    "one_gan_by_env":
+      "dynamics":
+        "D_hidden_layers": [256,128,64]
+        "G_hidden_layers": [256,128,64]
+
+        "D_optimizer":
+          "type": "rms"
+          "params":
+            "learning_rate": 0.00005
+            "clipvalue": 0.1
+        "G_optimizer":
+          "type": "rms"
+          "params":
+            "learning_rate": 0.00005
+            "clipvalue": 0.1
+      "lambda_penalize_high_entropy": null #0.
+      "color": [1,0,0,1]
+      "type": "classic"
+      "lambda_": 0
+      "z_size": 5
+      "G_output_activations": ['sigmoid']
+      "G_batch_norm": False
+      "D_batch_norm": False
+      "G_dropout": 0
+      "D_dropout": 0
+      "D_n_updates": 1
+      "G_n_updates": 3
+      "D_activation": "relu"
+      "G_activation": "relu"
+
+    "agglo_gan":
+      "dynamics":
+        "D_hidden_layers": [256,128,64]
+        "G_hidden_layers": [256,128,64]
+
+        "D_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+        "G_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+
+      "lambda_penalize_high_entropy": null
+      "color": [0,1,0,1]
+      "lambda_": 0
+      "G_output_activations": ['sigmoid']
+
+      "z_size": 10
+      "G_batch_norm": False
+      "D_batch_norm": False
+      "G_dropout": 0
+      "D_dropout": 0
+      "D_n_updates": 1
+      "G_n_updates": 3
+      "type": "agglomerated_gan"
+      "D_activation": "relu"
+      "G_activation": "relu"
+    "hyper_nn":
+      "dynamics":
+        "D_hidden_layers": [256,128,64]
+        "G_hidden_layers": [256,128,64]
+
+        "D_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+        "G_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+
+      "classifier_baseline": "feed_forward_classifier"
+      "noisy_input_context_vector": 0
+      "lambda_penalize_high_entropy": 0
+      "color": [0,0,1,1]
+      "lambda_": 0
+      "G_output_activations": ['sigmoid']
+      "z_size": 0
+      "G_batch_norm": False
+      "D_batch_norm": False
+      "G_dropout": 0
+      "D_dropout": 0
+      "D_n_updates": 1
+      "G_n_updates": 3
+      "type": "hyper_nn"
+      "D_activation": "relu"
+      "G_activation": "relu"
+
+    "hyper_nn_dropout":
+      "dynamics":
+        "D_hidden_layers": [256,128,64]
+        "G_hidden_layers": [256,128,64]
+
+        "D_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+        "G_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+      "classifier_baseline": "feed_forward_classifier"
+      "noisy_input_context_vector": 0
+      "lambda_penalize_high_entropy": 0
+      "color": [0.11,0.5,0.45,1]
+      "lambda_": 0
+      "G_output_activations": ['sigmoid']
+      "z_size": 0
+      "G_batch_norm": False
+      "D_batch_norm": False
+      "G_dropout": 0.5
+      "D_dropout": 0
+      "D_n_updates": 1
+      "G_n_updates": 3
+      "type": "hyper_nn"
+      "D_activation": "relu"
+      "G_activation": "relu"
+
+    "hyper_nn_training_True":
+      "dynamics":
+        "D_hidden_layers": [256,128,64]
+        "G_hidden_layers": [256,128,64]
+
+        "D_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+        "G_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+      "classifier_baseline": "feed_forward_classifier"
+      "noisy_input_context_vector": 0
+      "lambda_penalize_high_entropy": 0
+      "color": [0.5,0.5,1,1]
+      "lambda_": 0
+      "G_output_activations": ['sigmoid']
+      "z_size": 0
+      "G_batch_norm": False
+      "D_batch_norm": False
+      "training": True
+      "G_dropout": 0.5
+      "D_dropout": 0
+      "D_n_updates": 1
+      "G_n_updates": 3
+      "type": "hyper_nn"
+      "D_activation": "relu"
+      "G_activation": "relu"
+    "hyper_gan_z_10":
+      "dynamics":
+        "D_hidden_layers": [256,128,64]
+        "G_hidden_layers": [256,128,64]
+
+        "D_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+        "G_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+      "classifier_baseline": "feed_forward_classifier"
+      "noisy_input_context_vector": 0
+      "lambda_penalize_high_entropy": 0
+      "color": [1,0,1,1]
+      "lambda_": 0
+      "G_output_activations": ['sigmoid']
+
+      "z_size": 5
+      "G_batch_norm": False
+      "D_batch_norm": False
+      "G_dropout": 0
+      "D_dropout": 0
+      "D_n_updates": 1
+      "G_n_updates": 3
+      "type": "hyper_gan"
+      "D_activation": "relu"
+      "G_activation": "relu"
+
+    "hyper_gan_z_10_dropout":
+      "dynamics":
+        "D_hidden_layers": [256,128,64]
+        "G_hidden_layers": [256,128,64]
+
+        "D_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+        "G_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+      "classifier_baseline": "feed_forward_classifier"
+      "noisy_input_context_vector": 0
+      "lambda_penalize_high_entropy": 0
+      "color": [0.11,0.25,0.6,1]
+      "lambda_": 0
+      "G_output_activations": ['sigmoid']
+
+      "z_size": 10
+      "G_batch_norm": False
+      "D_batch_norm": False
+      "G_dropout": 0.5
+      "D_dropout": 0
+      "D_n_updates": 1
+      "G_n_updates": 3
+      "type": "hyper_gan"
+      "D_activation": "relu"
+      "G_activation": "relu"
+
+    "hyper_gan_z_1":
+      "dynamics":
+        "D_hidden_layers": [256,128,64]
+        "G_hidden_layers": [256,128,64]
+
+        "D_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+        "G_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+      "classifier_baseline": "feed_forward_classifier"
+      "noisy_input_context_vector": 0
+      "lambda_penalize_high_entropy": 0
+      "color": [0.15,0.75,1,1]
+      "lambda_": 0
+      "G_output_activations": ['sigmoid']
+
+      "z_size": 1
+      "G_batch_norm": False
+      "D_batch_norm": False
+      "G_dropout": 0
+      "D_dropout": 0
+      "D_n_updates": 1
+      "G_n_updates": 3
+      "type": "hyper_gan"
+      "D_activation": "relu"
+      "G_activation": "relu"
+
+    "hyper_gan_z_1_dropout":
+      "dynamics":
+        "D_hidden_layers": [256,128,64]
+        "G_hidden_layers": [256,128,64]
+
+        "D_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+        "G_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+      "classifier_baseline": "feed_forward_classifier"
+      "noisy_input_context_vector": 0
+      "lambda_penalize_high_entropy": 0
+      "color": [0.66,0.75,0.33,1]
+      "lambda_": 0
+      "G_output_activations": ['sigmoid']
+      "z_size": 1
+      "G_batch_norm": False
+      "D_batch_norm": False
+      "G_dropout": 0.5
+      "D_dropout": 0
+      "D_n_updates": 1
+      "G_n_updates": 3
+      "type": "hyper_gan"
+      "D_activation": "relu"
+      "G_activation": "relu"
+
+    "hyper_gan_z_1_training_True":
+      "dynamics":
+        "D_hidden_layers": [256,128,64]
+        "G_hidden_layers": [256,128,64]
+
+        "D_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+        "G_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+      "classifier_baseline": "feed_forward_classifier"
+      "noisy_input_context_vector": 0
+      "lambda_penalize_high_entropy": 0
+      "color": [1,0.5,0.5,1]
+      "lambda_": 0
+      "G_output_activations": ['sigmoid']
+
+      "z_size": 1
+      "G_batch_norm": False
+      "D_batch_norm": False
+      "training": True
+      "G_dropout": 0.5
+      "D_dropout": 0
+      "D_n_updates": 1
+      "G_n_updates": 3
+      "type": "hyper_gan"
+      "D_activation": "relu"
+      "G_activation": "relu"
+
+    "hyper_gan_z_10_training_True":
+      "dynamics":
+        "D_hidden_layers": [256,128,64]
+        "G_hidden_layers": [256,128,64]
+
+        "D_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+        "G_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+      "classifier_baseline": "feed_forward_classifier"
+      "noisy_input_context_vector": 0
+      "lambda_penalize_high_entropy": 0
+      "color": [0.29,0.29,0.5,1]
+      "lambda_": 0
+      "G_output_activations": ['sigmoid']
+
+      "z_size": 10
+      "G_batch_norm": False
+      "D_batch_norm": False
+      "training": True
+      "G_dropout": 0.5
+      "D_dropout": 0
+      "D_n_updates": 1
+      "G_n_updates": 3
+      "type": "hyper_gan"
+      "D_activation": "relu"
+      "G_activation": "relu"
+
+
+"transfer":
+  "baselines":
+
+    "dqn":
+      "baseline": "dqn"
+      "eval_interval": 2000 # 1000 #100
+      "log_interval": 500
+      "plot_interval": 2000
+      "initial_collect_steps": 0 #0
+      "offset_step_collection": 0
+      "optimizer":
+        "name": "rms"
+        "params": {}
+      #        "name": "adam"
+      #        "params":
+      #          "lr": 0.001
+      "gamma": 1 # 0.99
+      "update_network_frequency": 10 # 100 #TODO 100
+      "lambda_decay": 0.00025
+      "num_real_steps": 20000
+
+    "solution_3":
+      "gan_baseline": "hello_super_gan"
+      "stop_transfer_mechanism": False
+      "baseline": "solution_3"
+      "eval_interval": 10
+      "log_interval": 2
+      "plot_interval": 10
+      "initial_collect_steps": 0
+      "offset_step_collection": 0
+      "lambda_decay": 0.0025
+      "optimizer":
+        "name": "rms"
+        "params": {}
+      #        "name": "adam"
+      #        "params":
+      #          "lr": 0.001
+      "update_network_frequency": 10
+      "gamma": 0.99
+      "num_real_steps": 2000
+
+
+
+    "dyna_perfect":
+      "baseline": "dyna_perfect"
+      "eval_interval": 10
+      "log_interval": 2
+      "plot_interval": 10
+      "initial_collect_steps": 0
+      "offset_step_collection": 0
+      "lambda_decay": 0.0025
+      "optimizer":
+        ##    "name": "rmsprop"
+        #    "params": {}
+        "name": "adam"
+        "params":
+          "lr": 0.001
+      "update_network_frequency": 10
+      "gamma": 0.99
+      "num_real_steps": 2000
+    #
+    "dyna_imperfect":
+      "gan_baseline": "one_gan_by_env"
+      "baseline": "dyna_pretrained"
+      "eval_interval": 10 # 1000 #100
+      "log_interval": 2
+      "plot_interval": 10
+      "initial_collect_steps": 0
+      "offset_step_collection": 0
+      "lambda_decay": 0.0025
+      "optimizer":
+        ##    "name": "rmsprop"
+        #    "params": {}
+        "name": "adam"
+        "params":
+          "lr": 0.001
+      "update_network_frequency": 10
+      "gamma": 0.99
+      "num_real_steps": 2000
+
+    "dyna_model_learning":
+      "baseline": "dyna_model_learning"
+      "eval_interval": 20
+      "log_interval": 4
+      "plot_interval": 50
+      "initial_collect_steps": 0
+      "offset_step_collection": 0
+      "lambda_decay": 0.0025
+      "optimizer":
+        "name": "adam"
+        "params":
+          "lr": 0.001
+      "update_network_frequency": 10
+      "gamma": 0.99
+      "num_real_steps": 2000
+
+    "dyna_rdm":
+      "gan_baseline": "one_gan_by_env"
+      "baseline": "dyna_rdm"
+      "eval_interval": 10 # 1000 #100
+      "log_interval": 2
+      "plot_interval": 50
+      "initial_collect_steps": 0
+      "offset_step_collection": 0
+      "lambda_decay": 0.0025
+      "optimizer":
+        ##    "name": "rmsprop"
+        #    "params": {}
+        "name": "adam"
+        "params":
+          "lr": 0.001
+      "update_network_frequency": 10
+      "gamma": 0.99
+      "num_real_steps": 2000
+
+    "dyna_agglo":
+      "gan_baseline": "hello_agglo_gan"
+      "baseline": "dyna_agglo"
+      "eval_interval": 10 # 1000 #100
+      "log_interval": 2
+      "plot_interval": 50
+      "initial_collect_steps": 0
+      "offset_step_collection": 0
+      "lambda_decay": 0.0025
+      "optimizer":
+        ##    "name": "rmsprop"
+        #    "params": {}
+        "name": "adam"
+        "params":
+          "lr": 0.001
+      "update_network_frequency": 10
+      "gamma": 0.99
+      "num_real_steps": 2000
+
+    "dqn_extra_updates_bootstrapped":
+      "baseline": "dqn_extra_updates"
+      "lambda_decay": 0.0025 # must explore a bit more "non random" samples since most all init_step are randomize
+      "eval_interval": 50
+      "log_interval": 10
+      "plot_interval": 50
+      "initial_collect_steps": 1000
+      "offset_step_collection": 1000
+      "optimizer":
+        "name": "adam"
+        "params":
+          "lr": 0.001
+      "gamma": 0.99 # 0.99 loss diverges
+      "update_network_frequency": 10 # 100
+      "num_real_steps": 2000
+
+    "dqn_extra_updates":
+      "baseline": "dqn_extra_updates"
+      "lambda_decay": 0.0025 # must explore a bit more "non random" samples since most all init_step are randomize
+      "eval_interval": 50 # 1000 #100
+      "log_interval": 10
+      "plot_interval": 50
+      "initial_collect_steps": 0 #250
+      "offset_step_collection": 0
+      "optimizer":
+        "name": "adam"
+        "params":
+          "lr": 0.001
+      "gamma": 0.99 # 0.99 loss diverges
+      "update_network_frequency": 10 # 100
+      "num_real_steps": 2000
+
+    "dqn_extra_steps":
+      "baseline": "dqn_extra_steps"
+      "lambda_decay": 0.0025 # must explore a bit more "non random" samples since most all init_step are randomize
+      "eval_interval": 10 # 1000 #100
+      "log_interval": 2
+      "plot_interval": 50
+      "initial_collect_steps": 0 #250
+      "offset_step_collection": 0
+      "optimizer":
+        "name": "adam"
+        "params":
+          "lr": 0.001
+      "gamma": 0.99 # 0.99 loss diverges
+      "update_network_frequency": 10 # 100
+      "num_real_steps": 2000
+
+  "q_model":
+    "class": "FeedForwardQModel"
+    "params":
+      "layers": [128]
+
+  "planning_init_replay_buffer_max_length": 32
+  "fake_steps_replay_buffer_max_length": 1024
+  "stop_mean_return": [5,200]
+  "nb_runs": 1
+  "use_tf_agent": False # False
+  "eps_start": 0.5 # 0.5 1.0
+  "minibatch_size": 128
+  "num_eval_episodes": 50
+  # INTERVALS #
+  "log_target_model_performance_interval": 50
+  "training_interval": 1
+  "update_accuracy_interval": 1
+  "check_stop_transfer_interval": 1
+  "update_model_interval": 1
+  "use_true_done_to_stop_prediction": True
+  "use_true_reward_prediction": True
+  "replay_buffer_max_length": 100000
+  "shape": [20,50]
+  "action_selection_for_model_prediction": "greedy" #"random" #"greedy" # "random" # greedy
+
+  "target_gan_config":
+
+    "type": "classic"
+    "lambda_": 0
+    "z_size": 10
+    "G_output_activations": ['sigmoid']
+    "G_batch_norm": False
+    "D_batch_norm": False
+    "G_dropout": False
+    "D_dropout": False
+    "D_n_updates": 1
+    "G_n_updates": 3
+    "D_activation": "relu" #"tanh"
+    "G_activation": "relu" #"tanh"
+    "models_to_learn":
+      "dynamics":
+        "D_hidden_layers": [256,128,64]
+        "G_hidden_layers": [256,128,64]
+        "stop": {}
+
+        "D_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+        "G_optimizer":
+          "type": "rms"
+          "params":
+            "clipvalue": 0.1
+"general":
+  "seed": 0
+  "repeat": 1
+  "run_tensorboard": False
+  "multiprocessing": False
+  "use_gpu": True
+  "is_tensorboardX": false
+  "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "data"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+
+"onehot_action": True

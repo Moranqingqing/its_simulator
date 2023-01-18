@@ -1,0 +1,17 @@
+"general":
+  "id": "main_generalisation"
+
+"envs_collection": "gw_generalisation"
+
+"import_models":
+  "address": "googlecloud"
+  "local_workspace": "/home/ncarrara/work/rltl/rltl/main/data/main_generalisation"
+  "remote_workspace": "/home/nicolas_carrara1u/work/rltl/rltl/main/data/main_generalisation"
+
+"test_models":
+  "fake_color_alpha": 0.1
+  "exploration":
+    "type": "grid"
+    "n_samples": 5000
+    "deltas": [0.05,0.05]
+    "std": 0.0

@@ -1,0 +1,165 @@
+"ray":
+  "init":
+    "local_mode": false
+    "log_to_driver": true
+    "logging_level": "WARNING"
+  "run_experiments":
+    "experiments":
+      "qmix_test":
+        "run": "QMIX"
+        "checkpoint_freq": 1
+        "checkpoint_at_end": true
+        "stop":
+          "training_iteration": 1000
+        "config":
+
+          ####################
+          ####################
+          # OTHERS
+          ####################
+          ####################
+
+          "log_level": "WARNING"
+
+          ####################
+          ####################
+          # RL ALGO PARAMS
+          ####################
+          ####################
+
+          "num_gpus": 1
+          "num_workers": 7
+          "num_cpus_per_worker": 1
+          "timesteps_per_iteration": 10000
+          "target_network_update_freq": 1000
+          "buffer_size": 1000000
+          "lr": 0.0005
+          "optim_alpha": 0.99
+          "optim_eps": 0.00001
+          "grad_norm_clipping": 10
+          "learning_starts": 1000
+          "rollout_fragment_length": 4
+          "train_batch_size": 512
+          "mixer": "qmix"
+          "mixing_embed_dim": 32
+          "double_q": True
+          "batch_mode": "complete_episodes"
+
+          ####################
+          ####################
+          # EVALUATION
+          ####################
+          ####################
+
+#          "evaluation_interval": 1 # Evaluate with every `evaluation_interval` training iterations.
+#          "evaluation_num_episodes": 10
+#          "in_evaluation": False
+#          "evaluation_config":
+#            "explore": False
+#          "evaluation_num_workers": 0
+#          "custom_eval_function": null
+#          "use_exec_api": False
+
+          ####################
+          ####################
+          # EXPLORATION
+          ####################
+          ####################
+
+          # Max num timesteps for annealing schedules. Exploration is annealed from
+          # 1.0 to exploration_fraction over this number of timesteps scaled by
+          # exploration_fraction
+          "schedule_max_timesteps": 3000000
+          # Fraction of entire training period over which the exploration rate is
+          # annealed
+          "exploration_fraction": 0.33 #0.1
+          # Initial value of random action probability.
+          "exploration_initial_eps": 1.0
+          # Final value of random action probability.
+          "exploration_final_eps": 0.02
+
+
+          ####################
+          ####################
+          # MODEL
+          ####################
+          ####################
+
+          "model":
+            "lstm_cell_size": 64
+            "max_seq_len": 999999
+
+
+          ####################
+          ####################
+          # ENV
+          ####################
+          ####################
+          "gamma": 0.995
+          "horizon": null # if null, horizon will be choosen by env
+          "env": "a_master_slaves_3"
+          "env_config":
+            "render": false
+            "simulator": "traci"
+            "sim_params":
+              "restart_instance": True
+              "sim_step": 1
+              "print_warnings": False
+              "render": False
+            "env_state_params":
+              "name": "concatenate_agents_boxes"
+              "params": {}
+            "groups_agent_params":
+              "name": "single_group"
+              "params": {}
+            "multi_agent_config_params": null
+            "agents_params":
+              "name": "all_the_same"
+              "params":
+                "default_policy": null
+                "global_reward": false
+                "action_params":
+                  "name": "ExtendChangePhaseConnector"
+                  "params": {}
+                "obs_params":
+                  "name": "TDTSEConnector"
+                  "params":
+                    "obs_params":
+                      "num_history": 1
+                      "detector_position": [5, 100]
+                    "phase_channel": true
+                    "raw_obs": true
+                    "use_progression": false
+                "reward_params":
+                  "name": "QueueRewardConnector"
+                  "params":
+                    "stop_speed": 2
+"general":
+  "id": "main"
+  "seed": null
+  "repeat": 1
+  "is_tensorboardX": false
+  "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "/media/ncarrara/stockage/ray_results"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+
+

@@ -1,0 +1,2 @@
+
+sbatch --export=config_file=configs/nicolas/main_sa0.yaml  --nodes=1 --time=00-00:10 --account=rrg-ssanner --gres=gpu:1 --cpus-per-task=1 --mem=1G --job-name=ncarrara-rltl --output=%N-%j.out main.sbatch

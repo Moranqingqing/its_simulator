@@ -1,0 +1,58 @@
+"general":
+  "id": "cartpole_super_gan_entropy"
+  "seed": 0
+  "repeat": 1
+  "is_tensorboardX": false
+  "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "tmp"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+
+"envs_collection": "cartpole_gravity_collection"
+"cross_comparaison":
+  "nb_samples": 2000
+  "nb_episodes": 100
+
+"create_datasets":
+  "onehot_action": True
+  "n_episodes": 2000
+"gan_config":
+  "data_size_by_source_env": 2000
+  "batch_size": "max"
+  "lambda_penalize_high_entropy": 1.0 #0.
+  "stop":
+    "max_epochs": 10000 #1500
+    "testing_loss_treshold": 0.02
+  "lambda_": 0
+  "D_n_updates": 1
+  "G_n_updates": 1
+  "use_bce_tf_function": False
+  "type": "super_gan" # "wasserstein"
+  #  "lipchitz_method": "clipping",
+  "z_size": 1 #5
+  "D_hidden_layers": [ 512, 256]
+  "G_hidden_layers": [ 512, 256]
+  "D_activation": "tanh"
+  "G_activation": "tanh"
+  "negative_sampling":
+    "grid_search":
+      - null
+

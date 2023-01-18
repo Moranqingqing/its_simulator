@@ -1,0 +1,82 @@
+"ray":
+  "init":
+    "local_mode": false
+    "log_to_driver": true
+    "logging_level": "WARNING"
+  #    "object_store_memory": 1000000000
+  "run_experiments":
+    "experiments":
+      "static_policy(4x4)":
+        "run": "EVALUATOR"
+        "stop":
+          "training_iteration": 1
+        "config":
+          "num_gpus": 0
+          "num_workers": 7
+          "timesteps_per_iteration": 100000
+          "horizon": null # if null, horizon will be choosen by env
+          "env": "four_by_four"
+          "env_config":
+            "render": false
+            "simulator": "traci"
+            "sim_params":
+              "restart_instance": True
+              "sim_step": 1
+              "print_warnings": False
+              "render": False
+            "agents_params":
+              "name": "OneTlAgentByIntersection"
+              "params":
+                "default_policy":
+                  "name": "StaticPolicy"
+                  "params": {}
+                "action_params":
+                  "name": "ExtendChangePhaseConnector"
+                  "params": {}
+                "obs_params":
+                  "name": "TDTSEConnector"
+                  "params":
+                    "obs_params":
+                      "num_history": 60
+                      "detector_position": [5, 100]
+                    "phase_channel": true
+                "reward_params":
+                  "name": "QueueRewardConnector"
+                  "params":
+                    "stop_speed": 2
+#                "reward_params":
+#                  "name": "MultiNodesTravelTimeRewardConnector"
+#                  "params": {}
+"general":
+  "id": "main"
+  "repeat": 1
+  "seed": null
+  "is_tensorboardX": false
+  "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "tmp/main"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+        
+      
+    
+  
+
+

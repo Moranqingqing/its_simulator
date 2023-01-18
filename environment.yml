@@ -1,0 +1,24 @@
+name: wolf
+dependencies:
+  - python==3.8
+  - pip
+  - pip:
+      - gym
+      - scipy
+      - ray
+      - ray[rllib]
+      - ray[debug]
+      - ray[tune]
+      - pandas
+      - matplotlib
+      - imutils
+      - traci
+      - dm-tree
+      - lz4
+#   Hardware dependent stuffs (GPU/CPU, AMD/NVIDIA)
+#      - torch==1.7.0+cpu
+#      - torch==1.7.0+cu110
+#      - tensorflow-rocm
+#      - tensorflow-gpu
+#      - tensorflow-cpu
+

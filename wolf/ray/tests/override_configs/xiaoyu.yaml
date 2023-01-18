@@ -1,0 +1,17 @@
+"ray":
+  "run_experiments":
+    "experiments":
+      "*":
+        "config":
+          "num_gpus": 0
+          "num_workers": 3
+          "env_config":
+            "net_params":
+              "template":
+                "net": "/home/arbiter/repos/sow45_code/misc/Huawei2/sumo_net/shenzhen_3by3_loops_modified_12int_center.net.xml"
+                "rou": "/home/arbiter/repos/sow45_code/misc/Huawei2/sumo_net/flow_turns_rou_0506.rou.xml"
+                "vtype": "/home/arbiter/repos/sow45_code/misc/Huawei2/sumo_net/flow_turns_rou_0506.rou.xml"
+                "add": "/home/arbiter/repos/sow45_code/misc/Huawei2/sumo_net/shenzhen_3by3_loopfile_2.xml"
+"general":
+  "sumo_home": "~/sumo_binaries/bin"
+  "workspace": "~/stockage/ray_results/test0"

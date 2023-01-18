@@ -1,0 +1,89 @@
+"ray":
+  "init":
+    "local_mode": false
+    "log_to_driver": true
+    "logging_level": "WARNING"
+  "run_experiments":
+    "experiments":
+      "global_agent":
+        "run": "APEX"
+        "checkpoint_freq": 1
+        "checkpoint_at_end": true
+        "stop":
+          "training_iteration": 2
+        "config":
+          "framework": "tf"
+          "log_level": "WARNING"
+          "num_gpus": 0
+          "num_workers": 1
+          "target_network_update_freq": 10
+          "learning_starts": 0
+          "model":
+            "custom_model": "tdtse"
+            "custom_model_config":
+              "filters_size": 4
+              "dense_layer_size_by_node": 8 # size by node
+              "use_progression": false
+          "gamma": 0.99 # 0.995
+          "horizon": 100 # if null, horizon will be choosen by wolfenv
+          "env": "traffic_env_test0"
+          "env_config":
+            "render": False
+            "simulator": "traci"
+            "sim_params":
+              "restart_instance": True
+              "sim_step": 1
+              "print_warnings": False
+              "render": False
+            "env_state_params": null
+            "group_agents_params": null
+            "multi_agent_config_params":
+              "name": "shared_policy"
+              "params": {}
+            "agents_params":
+              "name": "global_agent"
+              "params":
+                "default_policy": null
+                "global_reward": false
+                "action_params":
+                  "name": "ExtendChangePhaseConnector"
+                  "params": {}
+                "obs_params":
+                  "name": "TDTSEConnector"
+                  "params":
+                    "obs_params":
+                      "num_history": 3
+                      "detector_position": [5, 100]
+                    "phase_channel": true
+                "reward_params":
+                  "name": "QueueRewardConnector"
+                  "params":
+                    "stop_speed": 2
+"general":
+  "id": "main"
+  "seed": null
+  "repeat": 1
+  "is_tensorboardX": false
+  "workspace": "tmp"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+
+

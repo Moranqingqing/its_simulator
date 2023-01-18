@@ -1,0 +1,43 @@
+{
+  "cur_queue": [
+                 ["Ilia", "Xiaoyu"],
+                 ["Parth", "Ilia"],
+                 ["Zhicheng", "Parth"],
+                 ["Zhicheng", "Ilia"],
+                 ["Xiaoyu", "Parth"],
+                 ["Xiaoyu", "Zhicheng"]
+               ],
+  "processed_up_to_id": 0,
+  "pull_requests": [
+    {
+      "id": 20,
+      "title": "Custom metric module",
+      "author": "Xiaoyu",
+      "reviewers": null
+    },
+    {
+      "id": 21,
+      "title": "Max pressure policy",
+      "author": "Zhicheng",
+      "reviewers": null
+    },
+    {
+      "id": 32,
+      "title": "Offset policy",
+      "author": "Zhicheng",
+      "reviewers": null
+    },
+    {
+      "id": 36,
+      "title": "Fix explore issue",
+      "author": "Yifei",
+      "reviewers": null
+    },
+    {
+      "id": 37,
+      "title": "Yellow phase added in benchmarks; pytest for benchmarks added",
+      "author": "Parth",
+      "reviewers": null
+    }
+  ]
+}

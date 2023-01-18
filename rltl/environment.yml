@@ -1,0 +1,22 @@
+name: rltl
+dependencies:
+  - python==3.8
+  - pip
+  - pip:
+      - gym
+      - tensorboard
+      - scipy
+      - pandas
+      - matplotlib
+      - pyyaml
+      - tensorflow-addons
+      - cairocffi
+      - gym
+      - box2d
+      - box2d-py
+      - tensorflow-probability
+      - IPython
+      - imageio
+      - pydot
+
+

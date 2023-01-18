@@ -1,0 +1,147 @@
+"ray":
+  "init":
+    "local_mode": false
+    "log_to_driver": true
+    "logging_level": "WARNING"
+  "run_experiments":
+    "experiments":
+      "global_agent":
+        "run": "APEX"
+        "checkpoint_freq": 1
+        "checkpoint_at_end": true
+        "stop":
+          "training_iteration": 100
+        "config":
+
+          ####################
+          ####################
+          # OTHERS
+          ####################
+          ####################
+
+          "framework": "tf"
+          "log_level": "WARNING"
+
+          ####################
+          ####################
+          # RL ALGO PARAMS
+          ####################
+          ####################
+
+          "num_gpus": 1
+          "num_workers": 7
+          "target_network_update_freq": 100
+          "learning_starts": 0
+          "timesteps_per_iteration": 1000
+          ####################
+          ####################
+          # EVALUATION
+          ####################
+          ####################
+
+          # "evaluation_interval": 10 # Evaluate with every `evaluation_interval` training iterations.
+          # "evaluation_num_episodes": 10
+          # "in_evaluation": False
+          # "evaluation_config":
+          #   "explore": False
+          # "evaluation_num_workers": 0
+          # "custom_eval_function": null
+          # "use_exec_api": False
+
+          ####################
+          ####################
+          # EXPLORATION
+          ####################
+          ####################
+
+          # "exploration_config":
+          #   "type": "EpsilonGreedy"
+          #   "epsilon_schedule":
+          #     "type": "ExponentialSchedule" # check vizu_exp_schedule.py to find the right params for this exploration
+          #     "schedule_timesteps": 10000
+          #     "initial_p": 1.0
+          #     "decay_rate": 0.01
+
+          ####################
+          ####################
+          # MODEL
+          ####################
+          ####################
+
+          "model":
+            "custom_model": "tdtse"
+            "custom_model_config":
+              "filters_size": 32
+              "dense_layer_size_by_node": 64 # size by node
+              "use_progression": false
+
+          ####################
+          ####################
+          # ENV
+          ####################
+          ####################
+          
+          "gamma": 0.99 # 0.995
+          "horizon": null # if null, horizon will be choosen by wolfenv
+          "env": "traffic_env_test1"
+          "env_config":
+            "render": False
+            "simulator": "traci"
+            "sim_params":
+              "restart_instance": True
+              "sim_step": 1
+              "print_warnings": False
+              "render": False
+            "env_state_params": null
+            "group_agents_params": null
+            "multi_agent_config_params":
+              "name": "shared_policy"
+              "params": {}
+            "agents_params":
+              "name": "global_agent"
+              "params":
+                "default_policy": null
+                "global_reward": false
+                "action_params":
+                  "name": "ExtendChangePhaseConnector"
+                  "params": {}
+                "obs_params":
+                  "name": "TDTSEConnector"
+                  "params":
+                    "obs_params":
+                      "num_history": 60 # same results with  tbh :O 30
+                      "detector_position": [5, 100]
+                    "phase_channel": true
+                "reward_params":
+                  "name": "QueueRewardConnector"
+                  "params":
+                    "stop_speed": 2
+"general":
+  "id": "main"
+  "seed": null
+  "repeat": 1
+  "is_tensorboardX": false
+  "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "wolf/tests/traffic_env/test1/results"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+
+

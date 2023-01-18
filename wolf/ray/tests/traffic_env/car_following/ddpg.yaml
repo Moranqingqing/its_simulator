@@ -1,0 +1,95 @@
+"ray":
+  "init":
+    "local_mode": false
+    "log_to_driver": true
+    "logging_level": "WARNING"
+  "run_experiments":
+    "experiments":
+      "ddpg":
+        "run": "DDPG"
+        "checkpoint_freq": 5
+        "checkpoint_at_end": true
+        "stop":
+          # TODO: ?
+          "training_iteration": 400
+        "config":
+          "num_gpus": 1
+          "num_workers": 6
+          "framework": "torch"
+          # TODO: ?
+          # "timesteps_per_iteration": 1000
+          "train_batch_size": 1024
+          "buffer_size": 20000
+          "actor_hidden_activation": "tanh"
+          "critic_hidden_activation": "tanh"
+          "actor_hiddens": [64, 64]
+          "critic_hiddens": [64, 64]
+          # "actor_lr": 0.001
+          # "critic_lr": 0.001
+
+          ####################
+          ####################
+          # ENV
+          ####################
+          ####################
+          "horizon": 3000 # if null, horizon will be choosen by wolfenv
+          "env": "car_following_test0"
+          "env_config":
+            "record_flag": true
+            "render": false
+            "simulator": "traci"
+            "sim_params":
+              "restart_instance": true
+              "sim_step": 0.1
+              "emission_path": '/tmp/yifei'
+              "print_warnings": false
+              "render": false
+            "env_state_params": null
+            "group_agents_params": null
+            "multi_agent_config_params":
+              "name": "shared_policy"
+              "params": {}
+            "agents_params":
+              "name": "all_the_same_vehicles_agents"
+              "params":
+                "global_reward": false
+                "default_policy": null
+                "action_params":
+                  "name": "VehActionConnector"
+                  "params": {}
+                "obs_params":
+                  "name": "CarFollowingConnector"
+                  "params": {}
+                "reward_params":
+                  "name": "VehRewardConnector"
+                  "params": {"W2": 5,
+                             "W4": 500}
+
+
+"general":
+  "id": "main"
+  "seed": null
+  "repeat": 1
+  "is_tensorboardX": true
+  "sumo_home": "/usr/share/sumo"
+  "workspace": "wolf/tests/traffic_env/car_following/results"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "DEBUG"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false

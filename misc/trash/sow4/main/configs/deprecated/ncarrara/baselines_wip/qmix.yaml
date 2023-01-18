@@ -1,0 +1,166 @@
+"ray":
+  "init":
+    "local_mode": false
+    "log_to_driver": true
+    "logging_level": "WARNING"
+  #    "object_store_memory": 1000000000
+  "run_experiments":
+    "experiments":
+      "qmix":
+        "run": "APEX_QMIX"
+        "checkpoint_freq": 1
+        "checkpoint_at_end": true
+        "stop":
+          "training_iteration": 20
+        "config":
+          # === QMix ===
+          # Mixing network. Either "qmix", "vdn", or None
+          "mixer": "qmix"
+          # Size of the mixing network embedding
+          "mixing_embed_dim": 32
+          # Whether to use Double_Q learning
+          "double_q": True
+          # Optimize over complete episodes by default.
+          "batch_mode": "complete_episodes"
+          # === Evaluation ===
+          # Evaluate with epsilon=0 every `evaluation_interval` training iterations.
+          # The evaluation stats will be reported under the "evaluation" metric key.
+          # Note that evaluation is currently not parallelized, and that for Ape-X
+          # metrics are already only reported for the lowest epsilon workers.
+          "evaluation_interval": null
+          # Number of episodes to run per evaluation period.
+          "evaluation_num_episodes": 10
+          # === Exploration ===
+          # Max num timesteps for annealing schedules. Exploration is annealed from
+          # 1.0 to exploration_fraction over this number of timesteps scaled by
+          # exploration_fraction
+          "schedule_max_timesteps": 100000
+          # Number of env steps to optimize for before returning
+          "timesteps_per_iteration": 10000
+          # Fraction of entire training period over which the exploration rate is
+          # annealed
+          "exploration_fraction": 0.1
+          # Initial value of random action probability.
+          "exploration_initial_eps": 1.0
+          # Final value of random action probability.
+          "exploration_final_eps": 0.02
+          # Update the target network every `target_network_update_freq` steps.
+          "target_network_update_freq": 100
+          # === Replay buffer ===
+          # Size of the replay buffer in steps.
+          "buffer_size": 100000
+          # === Optimization ===
+          # Learning rate for RMSProp optimizer
+          "lr": 0.0005
+          # RMSProp alpha
+          "optim_alpha": 0.99
+          # RMSProp epsilon
+          "optim_eps": 0.00001
+          # If not None, clip gradients during optimization at this value
+          "grad_norm_clipping": 10
+          # How many steps of the model to sample before learning starts.
+          # TODO   learning_starts> 0 for QMIX other pop an error
+          # TODO   File "/home/ncarrara/anaconda3/lib/python3.7/site-packages/ray/rllib/optimizers/async_replay_optimizer.py", line 418, in replay
+          # TODO   return random.choice(self.buffer)
+          # TODO   File "/home/ncarrara/anaconda3/lib/python3.7/random.py", line 261, in choice
+          # TODO   raise IndexError('Cannot choose from an empty sequence') from None
+          # TODO   IndexError: Cannot choose from an empty sequence
+          "learning_starts": 1000
+          # Update the replay buffer with this many samples at once. Note that
+          # this setting applies per-worker if num_workers > 1.
+          "rollout_fragment_length": 500
+          # Size of a batched sampled from replay buffer for training. Note that
+          # if async_updates is set, then each worker returns gradients for a
+          # batch of this size.
+          "train_batch_size": 512
+
+          # === Parallelism ===
+          # Number of workers for collecting samples with. This only makes sense
+          # to increase if your environment is particularly slow to sample, or if
+          # you"re using the Async or Ape-X optimizers.
+          "num_workers": 7
+          # Whether to use a distribution of epsilons across workers for exploration.
+          "per_worker_exploration": False
+          # Whether to compute priorities on workers.
+          "worker_side_prioritization": False
+          # Prevent iterations from going lower than this time span
+          "min_iter_time_s": 1
+          # gpus
+          "num_gpus": 1 # 0
+          "num_cpus_per_worker": 1
+          # === Model ===
+          "model":
+            "custom_model": "torch_raw_obs_rnn_model"
+            "custom_options":
+              "use_progression": False
+              "lstm_cell_size": 64
+              "max_seq_len": 999999
+
+          # === Others ===
+          "log_level": "DEBUG"
+           # === env ===
+          "gamma": 0.999
+          "horizon": null # if null, horizon will be choosen by env
+          "env": "green_wave"
+          "env_config":
+            "render": false
+            "simulator": "traci"
+            "sim_params":
+              "restart_instance": True
+              "sim_step": 1
+              "print_warnings": False
+              "render": False
+            "env_state_params":
+              "name": "MockTrueState"
+              "params": {}
+            "agents_params":
+              "name": "OneTlAgentByIntersection"
+
+              "params":
+                "default_policy": null
+                "group_agents": True
+                "action_params":
+                  "name": "ExtendChangePhaseConnector"
+                  "params": {}
+                "obs_params":
+                  "name": "RawConnector"
+                  "params":
+                    "detector_position": [5, 100]
+                    "phase_channel": true
+                "reward_params":
+                  "name": "QueueRewardConnector"
+                  "params":
+                    "stop_speed": 2
+"general":
+  "id": "main"
+  "repeat": 2
+  "seed": null
+  "is_tensorboardX": false
+  "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "tmp/main"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+        
+      
+    
+  
+
+

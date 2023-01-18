@@ -1,0 +1,116 @@
+"general":
+  "id": "main_final"
+
+"envs_collection": "gw_final"
+
+"import_models":
+  "address": "googlecloud"
+  "local_workspace": "/home/ncarrara/work/rltl/rltl/main/data/main_final"
+  "remote_workspace": "/home/nicolas_carrara1u/work/rltl/rltl/main/data/main_final"
+
+
+
+"inferences":
+  "average_accuracy": False
+  "fake_color_alpha": 0.01
+  "n_repeat_forward": 1000
+  "exploration":
+    "type": "grid"
+    "n_repeat": 1
+    "deltas": [0.1,0.1]
+    "std": 0.0
+
+
+
+"visualize_classifiers":
+  #############################
+  # red squares represent  E_j E_i NN(s,a,s_j)^i_k
+  # where k is the dimension of the context vector we are plotting
+  # j is the number of time (s,a) is samples. Make sense for stochastic tasks
+  # i is the number of time the network inferes a context vector. Make sense for bayesian networks.
+  # ====
+  # blue squares represent the variance, ie E_j Var_i NN(s,a,s_j)^i_k
+  # feedforward will show dark squares whill bayesian might show
+  # blue when the sample if not present in the learning dataset
+  # ====
+  # Green lines correspond to the trajectories of the task k
+  # ====
+  # White lines correspond to the trajectories of the task we are solving.
+  # ====
+  # if green and white are similar, the square should be more red
+  # if green and white are different, the square should be darker
+  #
+  #############################
+  # white and green samples
+  "repeat_sources": 1
+  "deltas_sources": [ 0.2,0.2 ]
+  # j samples
+  "repeat_context": 1
+  "deltas_context": [ 0.2,0.2 ]
+  # i
+  "repeat_bayesian_inference": 10
+
+
+"learn_classifiers":
+  "baselines":
+    "feedforward":
+      "dynamics":
+        "hidden_layers": [ [ "Dense",128 ],[ "Dense",64 ] ]
+        "stop":
+          "max_epochs": 3000
+          "testing_loss_treshold": 0.05
+          "training_loss_treshold": 0.05
+    "full_bayesian":
+      "dynamics":
+        "hidden_layers": [ [ "DenseVariational",128 ],[ "DenseVariational",64 ] ]
+        "stop":
+          "max_epochs": 3000
+          "testing_loss_treshold": 0.05
+          "training_loss_treshold": 0.05
+
+"transfer":
+  "eps_start": 1.0
+  "q_model":
+    "class": "FeedForwardQModel"
+    "params":
+      "layers": [512,256,128]
+
+  "planning_init_replay_buffer_max_length": 32
+  "fake_steps_replay_buffer_max_length": 1024
+  "stop_mean_return": [5,200]
+  "nb_runs": 1
+  "use_tf_agent": False # False
+  "minibatch_size": 1024
+  "num_eval_episodes": 50
+  # INTERVALS #
+  "log_target_model_performance_interval": 50
+  "training_interval": 1
+  "update_accuracy_interval": 1
+  "check_stop_transfer_interval": 1
+  "update_model_interval": 1
+  "use_true_done_to_stop_prediction": True
+  "use_true_reward_prediction": True
+  "replay_buffer_max_length": 100000
+  "shape": [20,50]
+  "action_selection_for_model_prediction": "greedy" #"random" #"greedy" # "random" # greedy
+
+  "baselines":
+
+    "dqn":
+      "baseline": "dqn"
+      "eval_interval": 10000 # 1000 #100
+      "log_interval": 100
+      "plot_interval": 10000
+      "initial_collect_steps": 10000 #0
+      "offset_step_collection": 0
+      "optimizer":
+        "name": "rms"
+        "params":
+          "clipvalue": 0.001
+      #        "name": "adam"
+      #        "params":
+      #          "lr": 0.001
+      "gamma": 1 # 0.99
+      "update_network_frequency": 10 # 100 #TODO 100
+      "lambda_decay": 0.000025
+      "num_real_steps": 200000

@@ -1,0 +1,47 @@
+"args":
+  "jobs_list":
+    - "env_statistics"
+
+"env_statistics":
+  "exploration":
+    "type": "grid" # "random"
+    "n_samples": 1000
+    "deltas": [0.1,0.1]
+    "std": 0.05
+
+"general":
+  "id": "test_noisy_grid_exploration"
+  "seed": 0
+  "repeat": 1
+  #  "multiprocessing": True
+  "multiprocessing": False
+  #  "use_gpu": False #True
+  "use_gpu": False
+  "is_tensorboardX": false
+  "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "tmp"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+
+#"envs_collection": "gw_wind"
+#"envs_collection": "gw_wind_test2"
+"envs_collection": "gw_wind_debug_2"
+"onehot_action": True

@@ -1,0 +1,83 @@
+"args":
+  "show_plots": True
+  "dont_load_models": True
+  "jobs_list":
+#        - "create_datasets"
+#        - "env_statistics"
+    #    - "import_results"
+    #    - "import_models"
+
+#        - "learn_classifiers"
+    #    - "visualize_classifier"
+    #    - "threshold_context_sigma"
+        - "learn_generative_models"
+#        - "inferences"
+    #   - "cross_comparaison_classifier"
+#        - "inferences_print_results"
+
+#    - "transfer"
+#    - "print_transfer_results"
+  "gan_baselines":
+#      - "agglo_gan"
+#      - "hyper_nn"
+      - "vae"
+#      - "hyper_vae"
+#      - "hyper_gan"
+  "transfer_baselines":
+    - "dqn"
+    - "dyna_perfect"
+  "classifier_baselines":
+    - "full_bayesian"
+    #    - "feedforward"
+  "envs_to_test":
+#    - "all"
+    - "Traffic_sources-0"
+
+  "gan_single_envs":
+    - "all"
+
+#  "transfer_baselines":
+#    - "dqn"
+
+"general":
+  "id": "main_traffic"
+
+"obs_to_np": "queue_length"
+"envs_collection": "wolfenv"
+
+"create_datasets":
+  "save_source_trajectories": True
+  "exploration":
+    "type": "random"
+    "n_episodes": 5
+    "policy": "StaticMaxPolicy"
+
+"learn_classifiers":
+  "G_output_neurons": [ 1 ]
+"import_models":
+  "address": "googlecloud"
+  "local_workspace": "/home/ncarrara/work/rltl/rltl/main/data/main_traffic"
+  "remote_workspace": "/home/nicolas_carrara1u/work/rltl/rltl/main/data/main_traffic"
+
+"inferences":
+  "fake_color_alpha": 0.1
+  "n_repeat_forward": 5
+  "exploration":
+    "type": "random"
+    "n_episodes": 1
+    "policy": "StaticMaxPolicy"
+
+"visualize_classifiers":
+  "repeat_sources": 10
+  "deltas_sources": [ 0.2,0.2 ]
+  "deltas_context": [ 0.1,0.1 ]
+  "repeat_context": 10
+
+"learn_gans":
+  "sigmoid_output": False
+
+  "G_output_activations": [ 'linear' ]
+  "G_output_neurons": [ 1 ]
+  "buffer_size_by_source_env": 1000
+  "stop":
+    "max_epochs": 1000

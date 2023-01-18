@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="shenzhen_3by3_loops_modified_12int_center.net.xml"/>
+        <route-files value="flow_turns_rou_0506.rou.xml"/>
+        <step-length value="1"/>
+        <additional-files value="shenzhen_3by3_loopfile_center.xml"/>
+    </input>
+
+    <time>
+        <begin value="0"/>
+        <end value="4200"/>
+    </time>
+</configuration>

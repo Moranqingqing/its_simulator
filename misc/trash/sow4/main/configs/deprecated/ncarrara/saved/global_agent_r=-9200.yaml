@@ -1,0 +1,190 @@
+"ray":
+  "init":
+    "local_mode": false
+    "log_to_driver": true
+    "logging_level": "WARNING"
+    "reuse_actors": true
+  "run_experiments":
+    "experiments":
+      "global_agent_wip":
+        "run": "APEX"
+        "checkpoint_freq": 1
+        "checkpoint_at_end": true
+        "stop":
+          "training_iteration": 100
+          #"episode_reward_mean": -9000
+        "config":
+          # === Evaluation Settings ===
+
+          # The evaluation stats will be reported under the "evaluation" metric key.
+          # Note that evaluation is currently not parallelized, and that for Ape-X
+          # metrics are already only reported for the lowest epsilon workers.
+          "evaluation_interval": 1 # Evaluate with every `evaluation_interval` training iterations.
+          # Number of episodes to run per evaluation period. If using multiple
+          # evaluation workers, we will run at least this many episodes total.
+          "evaluation_num_episodes": 1
+          # Internal flag that is set to True for evaluation workers.
+          "in_evaluation": False
+          # Typical usage is to pass extra args to evaluation env creator
+          # and to disable exploration by computing deterministic actions.
+          # IMPORTANT NOTE: Policy gradient algorithms are able to find the optimal
+          # policy, even if this is a stochastic one. Setting "explore=False" here
+          # will result in the evaluation workers not using this optimal policy!
+          "evaluation_config": {
+            # Example: overriding env_config, exploration, etc:
+            # "env_config": {...},
+             "explore": False
+          }
+          # Number of parallel workers to use for evaluation. Note that this is set
+          # to zero by default, which means evaluation will be run in the trainer
+          # process. If you increase this, it will increase the Ray resource usage
+          # of the trainer since evaluation workers are created separately from
+          # rollout workers.
+          "evaluation_num_workers": 0
+          # Customize the evaluation method. This must be a function of signature
+          # (trainer: Trainer, eval_workers: WorkerSet) -> metrics: dict. See the
+          # Trainer._evaluate() method to see the default implementation. The
+          # trainer guarantees all eval workers have the latest policy state before
+          # this function is called.
+          "custom_eval_function": null
+          # EXPERIMENTAL: use the execution plan based API impl of the algo. Can also
+          # be enabled by setting RLLIB_EXEC_API=1.
+          "use_exec_api": False
+          # === Model ===
+          "num_atoms": 1 # Number of atoms for representing the distribution of return. When
+          "v_min": -10.0 # this is greater than 1, distributional Q-learning is used.
+          "v_max": 10.0  # the discrete supports are bounded by v_min and v_max
+          "noisy": False # Whether to use noisy network
+          "sigma0": 0.5 # control the initial value of noisy nets
+          "dueling": True # Whether to use dueling dqn
+          "double_q": True # Whether to use double dqn
+          "hiddens": [256] # Postprocess model outputs with these hidden layers to compute the state and action values. See also the model config in catalog.py.
+          "parameter_noise": False # TODO(sven): Make Exploration class for parameter noise. If True parameter space noise will be used for exploration See https://blog.openai.com/better-exploration-with-parameter-noise/
+          #        "timesteps_per_iteration": 1000 # Minimum env steps to optimize for per train call. This value does  not affect learning, only the length of iterations.
+          #        "target_network_update_freq": 500 # Update the target network every `target_network_update_freq` steps.
+          # === Replay buffer ===
+          #        "buffer_size": 50000 # Size of the replay buffer. Note that if async_updates is set, then each worker will have a replay buffer of this size.
+          "prioritized_replay": False # If True prioritized replay buffer will be used.
+#          "prioritized_replay": True # If True prioritized replay buffer will be used.
+#          "prioritized_replay_alpha": 0.6 # Alpha parameter for prioritized replay buffer.
+#          "prioritized_replay_beta": 0.4 # Beta parameter for sampling from prioritized replay buffer.
+#          "final_prioritized_replay_beta": 0.4 # Final value of beta (by default, we use constant beta=0.4).
+#          "prioritized_replay_beta_annealing_timesteps": 20000 # Time steps over which the beta parameter is annealed.
+#          "prioritized_replay_eps": 0.000001 # 1e-6 # Epsilon to add to the TD errors when updating priorities.
+          "compress_observations": False # Whether to LZ4 compress observations
+          # === Optimization ===
+          "lr": 0.0005 #5e-4  # Learning rate for adam optimizer
+          "lr_schedule": null # Learning rate schedule
+          "adam_epsilon": 0.00000001 #1e-8 # Adam epsilon hyper parameter
+          "grad_norm_clipping": 40 # If not None, clip gradients during optimization at this value
+          #        "learning_starts": 1000 # How many steps of the model to sample before learning starts.
+          #        "rollout_fragment_length": 4 # Update the replay buffer with this many samples at once. Note that this setting applies per-worker if num_workers > 1.
+          #        "train_batch_size": 32  # Size of a batched sampled from replay buffer for training. Note that if async_updates is set, then each worker returns gradients for a  batch of this size.
+          # === Parallelism ===
+          #        "num_workers": 0 # Number of workers for collecting samples with. This only makes sense # to increase if your environment is particularly slow to sample, or if # you"re using the Async or Ape-X optimizers.
+          #        "worker_side_prioritization": False # Whether to compute priorities on workers.
+          #        "min_iter_time_s": 1 # Prevent iterations from going lower than this time span
+          # === APEX specific ===
+          "optimizer":
+            "max_weight_sync_delay": 400
+            "num_replay_buffer_shards": 4
+            "debug": False
+          "num_gpus": 1
+          "n_step": 1 # 3
+          "num_workers": 7
+          "buffer_size": 100000 #2000000
+          "learning_starts": 0 #50000
+          "train_batch_size":
+            "grid_search": [128] #[32,128,512] #512
+          "rollout_fragment_length": 500
+          "target_network_update_freq": #500000
+            "grid_search": [100] #[10,100,1000] #TODO 1000 is a bit lower
+          "timesteps_per_iteration": 5000 #25000
+          "exploration_config":
+#            "type": "PerWorkerEpsilonGreedy"
+            "type": "EpsilonGreedy"
+#            "initial_epsilon": 1.0
+#            "final_epsilon": 0.001
+#            "epsilon_timesteps":
+            "epsilon_schedule":
+                "type": "ExponentialSchedule"
+                "schedule_timesteps": 50000
+                "initial_p": 1.0
+                "decay_rate": 0.1
+          "worker_side_prioritization": True
+          "min_iter_time_s": 30
+          # === others ====
+#          "log_level": "DEBUG"
+          "log_level": "WARNING"
+          "num_cpus_per_worker": 1
+          "gamma":
+            "grid_search": [0.995] #[0, 0.999]
+          "model":
+            "custom_model": "multi_nodes_tdtse"
+            "custom_options":
+              "use_progression":
+                "grid_search": [false] #,true]
+
+            # === env_config ===
+          "horizon": null # if null, horizon will be choosen by env
+          "env": "green_wave"
+          "env_config":
+            "render": false
+            "simulator": "traci"
+            "sim_params":
+              "restart_instance": True
+              "sim_step": 1
+              "print_warnings": False
+              "render": False
+            "agents_params":
+              "name": "OneAgentForAllIntersections"
+              "params":
+                "default_policy": null
+                "action_params":
+                  "name": "MultiNodesPhaseConnector"
+                  "params": {}
+                "obs_params":
+                  "name": "MultiNodesTDTSEConnector"
+                  "params":
+                    "obs_params":
+                      "num_history": 60
+                      "detector_position": [5, 100]
+                    "phase_channel": true
+                "reward_params":
+                  "name": "MultiNodesQueueRewardConnector"
+                  "params":
+                    "stop_speed": 2
+                    "n": 100
+"general":
+  "id": "main"
+  "seed": null
+  "repeat": 2
+  "is_tensorboardX": false
+  "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "tmp/main"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+        
+      
+    
+  
+
+

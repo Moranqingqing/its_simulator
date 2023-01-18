@@ -1,0 +1,46 @@
+"general":
+  "id": "debug"
+  "seed": null
+  "repeat": 1
+  "is_tensorboardX": false
+  "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "tmp"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+
+"envs_collection": "x"
+"gan_config":
+  "data_size_by_source_env": 100
+  "batch_size": "max"
+  "epochs": 50
+  "lambda_": 0
+  "D_n_updates": 1
+  "G_n_updates": 1
+  "use_bce_tf_function": False
+  "type": "classic" # "wasserstein"
+#  "lipchitz_method": "clipping",
+  "z_size": 1
+  "negative_sampling":
+    "grid_search":
+      - null
+      - "use_fake_target_samples": False
+        "use_sources_samples": True
+        "minibatch_size": 50

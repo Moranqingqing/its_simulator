@@ -1,0 +1,34 @@
+"max_x": 25
+"experiments":
+  "global_agent":
+    "path_results": "/home/ncarrara/ray_results/global_agent_night_run"
+    "color": "blue"
+  "random":
+    "path_results": "/home/ncarrara/ray_results/random"
+    "color": "red"
+#  "global_agent2":
+#    "path_results": "/media/ncarrara/stockage/ray_results/test2/global_agent2"
+#    "color": "purple"
+#  "qmix_fast":
+#    "path_results": "/media/ncarrara/stockage/ray_results/run_all_baselines/qmix_fast"
+#    "color": "pink"
+#  "static_min":
+#    "path_results": "/media/ncarrara/stockage/ray_results/run_all_baselines/static_min"
+#    "color": "green"
+#  "static_max":
+#    "path_results": "/media/ncarrara/stockage/ray_results/run_all_baselines/static_max"
+#    "color": "black"
+#  "random":
+#    "path_results": "/media/ncarrara/stockage/ray_results/run_all_baselines/random"
+#    "color": "red"
+#  "iql_local_reward":
+#    "path_results": "/media/ncarrara/stockage/ray_results/run_all_baselines/iql_local_reward"
+#    "color": "brown"
+#  "iql_global_reward":
+#    "path_results": "/media/ncarrara/stockage/ray_results/run_all_baselines/iql_global_reward"
+#    "color": "yellow"
+"metrics":
+  "eps-greedy":
+    "path": ["episode_reward_mean"]
+  "greedy":
+    "path": ["evaluation", "episode_reward_mean"]

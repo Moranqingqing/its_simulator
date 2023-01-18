@@ -1,0 +1,4 @@
+"general":
+  "workspace": "/home/nicolas_carrara1u/data"
+  "use_gpu": True
+  "run_tensorboard": False

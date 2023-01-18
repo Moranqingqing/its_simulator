@@ -1,0 +1,192 @@
+"args":
+  "jobs_list":
+#        - "create_datasets"
+    #    - "env_statistics"
+#        - "learn_gans"
+#    - "cross_comparaison"
+    - "test_models"
+#      - "transfer"
+  #    - "print_transfer_results"
+  #  "transfer_baselines": []
+  "gan_baselines":
+    - "one_gan_by_env9"
+    - "hello_super_gan9"
+    - "hello_agglo_gan9"
+
+
+
+"cross_comparaison":
+  "nb_episodes": 100
+
+"create_datasets":
+  "exploration":
+    "type": "uniform" # "random"
+    #    "n_episodes": 2000
+    "n_samples": 20000
+
+"test_models":
+  "exploration":
+    "type": "uniform" # "random"
+    "n_samples": 1000
+
+"env_statistics":
+  "exploration":
+    "type": "uniform" # "random"
+    "n_samples": 5000
+#  "exploration":
+#    "type": "random" # "random"
+#    "n_episodes": 100
+
+
+"learn_gans":
+  "verbose": True
+  "ratio_train_to_test": 0.95
+  "baselines":
+
+    "one_gan_by_env9":
+      "type": "classic"
+      "lambda_": 0
+      "z_size": 0 #5
+      "G_output_activations": ['sigmoid']
+      "G_batch_norm": False
+      "D_batch_norm": False
+      "G_dropout": False
+      "D_dropout": False
+      "D_n_updates": 1
+      "G_n_updates": 1
+      "D_activation": "relu" #"tanh"
+      "G_activation": "relu" #"tanh"
+      "buffer_size_by_source_env": 1000
+      "dynamics":
+        "D_hidden_layers": [256,128,64]
+        "G_hidden_layers": [256,128,64]
+        "stop":
+          "max_epochs": 50000 #1500
+          "testing_loss_treshold": 0.007
+          "training_loss_treshold": 0.007
+        "D_optimizer":
+          "type": "rms"
+          "params": {}
+#          "type": "adam"
+#          "params":
+#            "learning_rate": 0.001 #2e-4
+        "G_optimizer":
+          "type": "rms"
+          "params": {}
+#          "type": "adam"
+#          "params":
+#            "learning_rate": 0.001 #2e-4
+
+    "hello_agglo_gan9":
+      "lambda_": 0
+      "G_output_activations": ['sigmoid']
+
+      "z_size": 1 #5
+      "G_batch_norm": False
+      "D_batch_norm": False
+      "G_dropout": False
+      "D_dropout": False
+      "D_n_updates": 1
+      "G_n_updates": 3
+      "type": "agglomerated_gan"
+      "buffer_size_by_source_env": 1000
+      "D_activation": "relu" #"tanh"
+      "G_activation": "relu" #"tanh"
+      "dynamics":
+        "D_hidden_layers": [256,128,64]
+        "G_hidden_layers": [256,128,64]
+        "stop":
+          "max_epochs": 50000 #1500
+          "testing_loss_treshold": 0.007
+          "training_loss_treshold": 0.007
+        "D_optimizer":
+          "type": "rms"
+          "params": {}
+        "G_optimizer":
+          "type": "rms"
+          "params": {}
+    "hello_super_gan9":
+      "lambda_": 0
+      "G_output_activations": ['sigmoid']
+
+      "z_size": 1 #5
+      "G_batch_norm": False
+      "D_batch_norm": False
+      "G_dropout": False
+      "D_dropout": False
+      "D_n_updates": 1
+      "G_n_updates": 3
+      "type": "super_gan"
+      "buffer_size_by_source_env": 1000
+      "D_activation": "relu" #"tanh"
+      "G_activation": "relu" #"tanh"
+      "dynamics":
+
+        "D_hidden_layers": [256,128,64]
+        "G_hidden_layers": [256,128,64]
+        "stop":
+          "max_epochs": 50000 #1500
+          "testing_loss_treshold": 0.007
+          "training_loss_treshold": 0.007
+        "D_optimizer":
+          "type": "rms"
+          "params": {}
+          #          "type": "adam"
+          #          "params":
+          #            "learning_rate": 0.001 #2e-4
+        "G_optimizer":
+          "type": "rms"
+          "params": {}
+        #          "type": "adam"
+        #          "params":
+        #            "learning_rate": 0.001 #2e-4
+
+
+  "G_output_neurons": [2]
+  "batch_size": "max"
+  "lambda_penalize_high_entropy": null #0.
+  "sum_fake_and_real_for_entropy": null
+
+  "learn_targets": True
+  "use_bce_tf_function": False
+  "factorize_fake_output": True
+
+
+
+
+"general":
+  "id": "main_perfect"
+  "seed": 0
+  "repeat": 1
+  #  "multiprocessing": True
+  "multiprocessing": False
+  #  "use_gpu": False #True
+  "use_gpu": False
+  "is_tensorboardX": false
+  "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "tmp"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+
+#"envs_collection": "gw_wind"
+#"envs_collection": "gw_wind_test2"
+"envs_collection": "gw_wind_debug_2"
+"onehot_action": True

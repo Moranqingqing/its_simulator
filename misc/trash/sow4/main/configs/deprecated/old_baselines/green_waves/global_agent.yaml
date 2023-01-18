@@ -1,0 +1,183 @@
+"ray":
+  "init":
+    "local_mode": false
+    "log_to_driver": true
+    "logging_level": "WARNING"
+  "run_experiments":
+    "experiments":
+      "global_agent":
+        "run": "APEX"
+        "checkpoint_freq": 1
+        "checkpoint_at_end": true
+        "stop":
+          "training_iteration": 50
+        "config":
+
+          ####################
+          ####################
+          # OTHERS
+          ####################
+          ####################
+
+          "log_level": "WARNING"
+
+          ####################
+          ####################
+          # RL ALGO PARAMS
+          ####################
+          ####################
+
+          "num_cpus_per_worker": 1
+          "min_iter_time_s": 30
+          "worker_side_prioritization": True
+          "num_atoms": 1 # Number of atoms for representing the distribution of return. When
+          "v_min": -10.0 # this is greater than 1, distributional Q-learning is used.
+          "v_max": 10.0  # the discrete supports are bounded by v_min and v_max
+          "noisy": False # Whether to use noisy network
+          "sigma0": 0.5 # control the initial value of noisy nets
+          "dueling": True # Whether to use dueling dqn
+          "double_q": True # Whether to use double dqn
+          "hiddens": [256] # Postprocess model outputs with these hidden layers to compute the state and action values. See also the model config in catalog.py.
+          "parameter_noise": False # TODO(sven): Make Exploration class for parameter noise. If True parameter space noise will be used for exploration See https://blog.openai.com/better-exploration-with-parameter-noise/
+          "prioritized_replay": True # If True prioritized replay buffer will be used.
+          "prioritized_replay_alpha": 0.6 # Alpha parameter for prioritized replay buffer.
+          "prioritized_replay_beta": 0.4 # Beta parameter for sampling from prioritized replay buffer.
+          "final_prioritized_replay_beta": 0.4 # Final value of beta (by default, we use constant beta=0.4).
+          "prioritized_replay_beta_annealing_timesteps": 20000 # Time steps over which the beta parameter is annealed.
+          "prioritized_replay_eps": 0.000001 # 1e-6 # Epsilon to add to the TD errors when updating priorities.
+          "compress_observations": False # Whether to LZ4 compress observations
+          "lr": 0.0005 #5e-4  # Learning rate for adam optimizer
+          "lr_schedule": null # Learning rate schedule
+          "adam_epsilon": 0.00000001 #1e-8 # Adam epsilon hyper parameter
+          "grad_norm_clipping": 40 # If not None, clip gradients during optimization at this value
+          "optimizer":
+            "max_weight_sync_delay": 400
+            "num_replay_buffer_shards": 4
+            "debug": False
+          "num_gpus": 1
+          "n_step": 1 # 3
+          "num_workers": 7
+          "buffer_size": 100000 #2000000
+          "learning_starts": 1000 #50000
+          "train_batch_size":
+            "grid_search": [128] #[32,128,512] #512
+          "rollout_fragment_length": 500
+          "target_network_update_freq": #500000
+            "grid_search": [1000] #[10,100,1000]
+          "timesteps_per_iteration": 10000 #25000
+
+          ####################
+          ####################
+          # EVALUATION
+          ####################
+          ####################
+
+          "evaluation_interval": 1 # Evaluate with every `evaluation_interval` training iterations.
+          "evaluation_num_episodes": 10
+          "in_evaluation": False
+          "evaluation_config":
+            "explore": False
+          "evaluation_num_workers": 0
+          "custom_eval_function": null
+          "use_exec_api": False
+
+          ####################
+          ####################
+          # EXPLORATION
+          ####################
+          ####################
+
+          "exploration_config":
+            "type": "EpsilonGreedy"
+            "epsilon_schedule":
+              "type": "ExponentialSchedule" # check vizu_exp_schedule.py to find the right params for this exploration
+              "schedule_timesteps": 500000
+              "initial_p": 1.0
+              "decay_rate": 0.01
+
+          ####################
+          ####################
+          # MODEL
+          ####################
+          ####################
+
+          "model":
+            "custom_model": "tdtse"
+            "custom_options":
+              "filters_size": 32
+              "dense_layer_size_by_node": 64 # size by node
+              "use_progression": false
+
+          ####################
+          ####################
+          # ENV
+          ####################
+          ####################
+          "gamma": 0.995
+          "horizon": null # if null, horizon will be choosen by env
+          "env": "a_green_wave_3"
+          "env_config":
+            "render": false
+            "simulator": "traci"
+            "sim_params":
+              "restart_instance": True
+              "sim_step": 1
+              "print_warnings": False
+              "render": False
+            "env_state_params": null
+            "groups_agent_params": null
+            "multi_agent_config_params":
+              "name": "single_policy"
+              "params": {}
+            "agents_params":
+              "name": "global_agent"
+              "params":
+                "default_policy": null
+                "global_reward": false
+                "action_params":
+                  "name": "ExtendChangePhaseConnector"
+                  "params": {}
+                "obs_params":
+                  "name": "TDTSEConnector"
+                  "params":
+                    "obs_params":
+                      "num_history": 60
+                      "detector_position": [5, 100]
+                    "phase_channel": true
+                "reward_params":
+                  "grid_search":
+                    - "name": "CumulativeDelayRewardConnector"
+                      "params":
+                        "stop_speed": 2
+                    - "name": "QueueRewardConnector"
+                      "params":
+                        "stop_speed": 2
+"general":
+  "id": "main"
+  "seed": null
+  "repeat": 3
+  "is_tensorboardX": false
+  "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "/media/ncarrara/stockage/ray_results"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+
+

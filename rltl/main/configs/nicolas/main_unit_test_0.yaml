@@ -1,0 +1,24 @@
+"general":
+  "id": "main_unit_test_0"
+  "run_tensorboard": True
+
+"envs_collection": "gw_unit_test_0"
+
+"import_models":
+  "address": "googlecloud"
+  "local_workspace": "/home/ncarrara/work/rltl/rltl/main/data/main_contextual_stochastic"
+  "remote_workspace": "/home/nicolas_carrara1u/work/rltl/rltl/main/data/main_contextual_stochastic"
+
+"learn_gans":
+  "buffer_size_by_source_env": 2500
+
+"inferences":
+  "plot_ground_truth": True
+  "average_accuracy": False
+  "fake_color_alpha": 0.01
+  "n_repeat_forward": 1000
+  "exploration":
+    "type": "grid"
+    "n_repeat": 1
+    "deltas": [0.5,0.5]
+    "std": 0.0

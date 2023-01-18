@@ -1,0 +1,162 @@
+"factory_type": "grid"
+"ray":
+  "init":
+    "local_mode": false
+    "log_to_driver": true
+    "logging_level": "DEBUG"
+  "run_experiments":
+    "experiments":
+      "parth.yaml":
+        "run": "DQN"
+        "restore": "/home/parth/ray_results/parth.yaml/queue-experiment_state-2020-04-12_12-23-55/checkpoint_25/checkpoint-25"
+        "stop":
+          "training_iteration": 0
+        "config":
+          "log_level": "DEBUG"
+          "n_step": 3
+          "num_gpus": 1
+          "num_workers": 1
+          "buffer_size": 2000000
+          "learning_starts": 50000
+          "train_batch_size": 512
+          "rollout_fragment_length": 50
+          "target_network_update_freq": 500000
+          "timesteps_per_iteration": 25000
+          # "exploration_config": {"type": "PerWorkerEpsilonGreedy"}
+          "exploration_config":
+            "type": "EpsilonGreedy"
+            "initial_epsilon": 0.00
+            "final_epsilon": 0.00
+            "epsilon_timesteps": 10000
+          "evaluation_interval": 0
+          "evaluation_config":
+            "explore": false
+            "evaluation_num_episodes": 1
+          "worker_side_prioritization": true
+          "min_iter_time_s": 30
+          "model":
+            # "custom_model": "keras_model"
+            "custom_model": "queue_obs_model"
+          "horizon": null
+          "env_config":
+            "agents_params":
+              "module": "sow45.world.environments.traffic.agents.agent_factory"
+              "class_name": "OneTlAgentByIntersection"
+              "params":
+                "action_params":
+                  "module": "sow45.world.environments.traffic.agents.connectors.action.exchange_change_phase"
+                  "class_name": "ExtendChangePhaseConnector"
+                  "params":
+                    "phases": ["GrGr","rGrG"]
+                    "tl_params":
+                      "green_min": 10
+                      "green_max": 60
+                      "yellow_max": 3
+                      "red_max": 2
+                # "obs_params":
+                #   "module": "sow45.world.environments.traffic.agents.connectors.observation.tdtse"
+                #   "class_name": "TDTSEConnector"
+                #   "params":
+                #     "tl_logic": ["GrGr","yryr","rGrG","ryry"]
+                #     "obs_params":
+                #       "num_history": 60
+                #       "detector_position": [5, 100]
+                #     "phase_channel": true
+                "obs_params":
+                  "module": "sow45.world.environments.traffic.agents.connectors.observation.queue_obs_connector"
+                  "class_name": "QueueObservationConnector"
+                  "params":
+                    "num_history": 60
+                # "reward_params":
+                #   "module": "sow45.world.environments.traffic.agents.connectors.reward.queue_reward_connector"
+                #   "class_name": "QueueRewardConnector"
+                #   "params":
+                #     "stop_speed": 0.3
+                #     "n": 100
+                #     "save_data": true
+                "reward_params":
+                  "module": "sow45.world.environments.traffic.agents.connectors.reward.travel_time_reward_connector"
+                  "class_name": "TravelTimeRewardConnector"
+                  "params":
+                    "n": 100000
+                    "save_data": true
+            "detector_params":
+              "positions": [-5, -100]
+              "frequency": 100
+            "simulator": "traci"
+            # "vehs_per_hour": 300
+            "probability": 0.3
+            "vehicles_params":
+              "min_gap": 2.5
+              "max_speed": 30
+              "decel": 7.5
+              "speed_mode": "right_of_way"
+            "sim_params":
+              "restart_instance": true
+              "sim_step": 1
+              "render": false
+              "print_warnings": false
+            "env_params":
+              "warmup_steps": 1
+              "horizon": 1000
+              "additional_params":
+                "target_velocity": 50
+                "switch_time": 3
+                "num_observed": 2
+                "discrete": false
+                "tl_type": "actuated"
+                "num_local_edges": 4
+                "num_local_lights": 4
+            "net_params":
+              "additional_params":
+                "speed_limit": 35
+                "grid_array":
+                  "short_length": 300
+                  "inner_length": 300
+                  "long_length": 100
+                  "row_num": 1
+                  "col_num": 1
+                  "cars_left": 1
+                  "cars_right": 1
+                  "cars_top": 1
+                  "cars_bot": 1
+                "horizontal_lanes": 1
+                "vertical_lanes": 1
+
+#    "search_alg": null
+#    "scheduler": null
+#    "with_server": false
+#    "server_port": 4321
+#    "verbose": 2
+#    "progress_reporter": null
+#    "resume": false
+#    "queue_trials": true
+#    "reuse_actors": false
+#    "trial_executor": null
+#    "raise_on_failed_trial": true
+#    "concurrent": true
+"general":
+  "id": "main"
+  "seed": 0
+  "is_tensorboardX": false
+  "workspace": "tmp/main"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "INFO"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "INFO"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false

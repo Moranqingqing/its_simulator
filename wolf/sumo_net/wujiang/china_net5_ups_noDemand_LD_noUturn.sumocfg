@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+    <input>
+        <net-file value="china_net_5p_ups_LD_noUturn.net.xml"/>
+		<route-files value="china_flows_1hr45min_noUturn_ups.rou.xml"/>
+		<additional-files value="china_net_5p_ups_loop_detectors.xml"/>
+    </input>
+    <time>
+        <begin value="0"/>
+        <end value="6600"/>
+    </time>
+    <time-to-teleport value="-1"/>
+</configuration>

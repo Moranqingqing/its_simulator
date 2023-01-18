@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<net version="1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/net_file.xsd">
+
+    <location netOffset="0.00,0.00" convBoundary="-975.41,-414.56,319.56,886.64" origBoundary="-10000000000.00,-10000000000.00,10000000000.00,10000000000.00" projParameter="!"/>
+
+    <edge id="C" function="internal">
+        <lane id="A-0" index="0" speed="13.89" length="8.20" shape="30.34,-11.45 28.44,-9.80 27.64,-8.08 26.83,-6.37 24.93,-4.72"/>
+    </edge>
+</net>

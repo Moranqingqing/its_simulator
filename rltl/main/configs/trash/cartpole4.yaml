@@ -1,0 +1,58 @@
+"general":
+  "id": "cartpole4"
+  "seed": 0
+  "repeat": 1
+  "is_tensorboardX": false
+  "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "tmp"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+
+"envs_collection": "cartpole_gravity_collection"
+"cross_comparaison":
+  "nb_samples": 1000
+  "nb_episodes": 100
+"create_datasets":
+  "n_episodes": 3000
+"gan_config":
+  "data_size_by_source_env": 4096
+  "batch_size": "max"
+  "stop":
+    "max_epochs": 30000
+    "testing_loss_treshold": 0.001
+  "lambda_": 0
+  "D_n_updates": 1
+  "G_n_updates": 1
+  "use_bce_tf_function": False
+  "type": "classic" # "wasserstein"
+  #  "lipchitz_method": "clipping",
+  "z_size": 1 #5
+  "D_hidden_layers": [512,256]
+  "G_hidden_layers": [512,256]
+  "D_activation": "tanh"
+  "G_activation": "tanh"
+  "negative_sampling":
+    "grid_search":
+      - null
+      - "use_fake_target_samples": False
+        "use_sources_samples": True
+        "minibatch_size": 8192
+

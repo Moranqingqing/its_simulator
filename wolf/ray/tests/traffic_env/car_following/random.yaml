@@ -1,0 +1,84 @@
+"ray":
+  "init":
+    "local_mode": true
+    "log_to_driver": true
+    "logging_level": "WARNING"
+  "run_experiments":
+    "experiments":
+      "random":
+        "run": "EVALUATOR"
+        "stop":
+          # TODO: ?
+          "training_iteration": 1
+        "config":
+          "num_gpus": 0
+          "num_workers": 1
+          # TODO: ?
+          "timesteps_per_iteration": 10000
+
+          ####################
+          ####################
+          # ENV
+          ####################
+          ####################
+          "horizon": 5000 # if null, horizon will be choosen by wolfenv
+          "env": "car_following_test0"
+          "env_config":
+            "render": true
+            "simulator": "traci"
+            "sim_params":
+              "restart_instance": true
+              "sim_step": 0.1
+              "print_warnings": false
+              "render": true
+            "env_state_params": null
+            "group_agents_params": null
+            "multi_agent_config_params":
+              "name": "shared_policy"
+              "params": {}
+            "agents_params":
+              "name": "all_the_same_vehicles_agents"
+              "params":
+                "global_reward": false
+                "default_policy":
+                  "name": "random"
+                  "params": {}
+                "action_params":
+                  "name": "VehActionConnector"
+                  "params": {}
+                "obs_params":
+                  "name": "CarFollowingConnector"
+                  "params": {}
+                "reward_params":
+                  "name": "VehRewardConnector"
+                  "params":
+                    "stop_speed": 2
+"general":
+  "id": "main"
+  "seed": null
+  "repeat": 1
+  "is_tensorboardX": false
+  "sumo_home": "/usr/share/sumo"
+  "workspace": "wolf/tests/traffic_env/car_following/results"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "DEBUG"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+
+

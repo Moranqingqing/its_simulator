@@ -1,0 +1,151 @@
+"args":
+  "show_plots": False # whereras the python process should create popup of plots. It is a blocking process if not using pycharm (maybe this is no blocking for others IDEs). All plots are saved on the disk anyway.
+  "dont_load_models": True # dont touch this here
+  "jobs_list":
+        # once you've create the dataset, you can comment the job. basically, each job will save the experiment to you can resume it (no need to rerun all previous jobs)
+        # order of the jobs don't matter.
+        - "create_datasets" # create all samples for each env and save on the disk, also create images of the task to visualize trajectories
+        - "env_statistics" # create images on the disk to visualize trajectories
+        - "learn_classifiers" # learn all classifiers (bayesian or classic)
+        - "visualize_classifier" # plot the context vectors
+  "classifier_baselines": # baselines (from learn_classifier parameters) to learn
+#    - "all"
+    - "full_bayesian"
+    - "only_last_layer_is_variational"
+  "envs_to_test": # restrict the envrionement to test during visualize_classifier and other jobs.
+    - "all"
+    #    - "Gridworld_sources-0"
+
+# distribution/collection of source/target tasks.
+# can be
+# gw_generalisation: deterministic dynamic, each task rotate the action for a given angle.
+# gw_generalisation_stochastic: stochastic, each task draw the action following a gaussian zero centered distribution. The std changes across tasks
+# gw_contextual: deterministic dynamics, each task is divised in 4 areas, one of those areas translate the action. The target task has 2 translating areas
+# gw_contextual_stochastic: stochastic dynamics, each task is divided in 4 areas. Each area draw the action following a gaussian zero centered distribution. The std change for each area. Order of the areas changes across tasks.
+"envs_collection": "gw_generalisation"
+
+########################################################################
+# you can see 3 types of exploration bellow. Grid, uniform and random
+# grid samples all actions on a grid of states
+# uniform draw  random states of the env and create one sample by draw (not a trajectory)
+# random create random trajectories from the starting point of the agent
+########################################################################
+"cross_comparaison":
+  "exploration":
+    "type": "grid"
+    "n_repeat": 5 # repeat the sample (usefull for stochastic envs)
+    "deltas": [0.2,0.2] # grid steps
+    "std": 0.0 # add some noise to the state of the grid
+
+"create_datasets":
+  "save_source_trajectories": True
+  "alpha": 0.1 # transparency when plotting the trajectoris
+  "exploration":
+    "type": "uniform"
+    "n_samples": 10000
+
+"env_statistics":
+  "alpha": 0.5
+  "exploration":
+    "type": "random"
+    "n_episodes": 100
+
+
+"visualize_classifiers":
+  "repeat_sources": 1
+  "deltas_sources": [0.2,0.2]
+  "deltas_context": [0.05,0.05]
+  "repeat_context": 1
+  "repeat_bayesian_inference": 10
+
+"learn_classifiers":
+  #############################
+  # Everything here is common to all baselines
+  # You can move those parameters to specific baselines
+  # it will override the common parameters
+  #############################
+  #############################
+  "verbose": True # dont modify, even if I think it wont matter.
+  "ratio_train_to_test": 0.95 # percentage of samples use to train the model
+  "G_output_neurons": [2]
+  "use_bce_tf_function": False # use the binary cross entropy of Keras (only for GAN, dono why this stuff is here)
+  "buffer_size_by_source_env": 2500 # the total number of samples will be X * number_of_envs
+  "type": "bayesian_classifier"
+  "output_activations": ['sigmoid']
+  "batch_norm": False
+  "use_keras_loss_for_BNN": True # use the cross_entropy loss of Keras
+  "dropout": False
+  "activation": "relu" # activation of all the layers (expect last one)
+  "interval_eval_epoch": 1 # compute the test (and training) l1 loss every X epochs.
+  "interval_save_models": 1 # save the models on the disk every X epochs. must be a divider of interval_eval_epoch
+  "optimizer":
+    "type": "adam"
+    "params":
+      "learning_rate": 0.001
+  "stop":
+    # stop the learning when one of those condition is met (logical OR)
+    # you can comment either of those conditions
+    "max_epochs": 10000
+    "testing_loss_treshold": 0.005
+    "training_loss_treshold": 0.005
+  "clip": True # whereas the crossentropy should be clipped (=False for initial version of baysian network)
+  "init_sigma": False # whereas the sigma of the variational layers should be initialized (=True for initial version of bayesian network)
+  "batch_size": 32 # size of the minibatch. Use "max" do a full epoch in one batch.
+  "kl_weight": "auto" # if "auto", then kl_weight = 1 / number_of_samples
+  "prior_params":
+     "prior_sigma_1": 1.
+     "prior_sigma_2": 0.1
+     "prior_pi": 0.5
+  "training": False # whereas the model should be in training mod during inference (usefull for dropout)
+  "baselines":
+    "full_bayesian":
+      # everything here is common to reward and dynamics model
+      # you can override those parameters under "dynamics" or "reward"
+      "color": [0.5,0,0,1] # color of the baseline in the plots and in the trajectories.
+      "dynamics":
+        "hidden_layers": [["DenseVariational",32],["DenseVariational",32]]
+        "output_layers": "DenseVariational"
+      # parameters for rewards
+      # if "rewards" is missing, the learning for this model wont operate (and it's fine, we don't care anymore about reward)
+      # "rewards":
+
+    "only_last_layer_is_variational":
+      "color": [0.5,0.5,0,1]
+      "dynamics":
+        "hidden_layers":  [["Dense",32],["Dense",32]]
+        "output_layers": "DenseVariational"
+
+"onehot_action": True # whereas representing action as  onehot vector instead of integers.
+
+"general":
+  "id": "mike_experiments"
+  "seed": 0 # not sure if setting the seed actually works
+  "repeat": 1 # dont modify
+  "run_tensorboard": False # put False here to prevent tensorboard to be launch automatically
+  "multiprocessing": False # dont modify
+  "use_gpu": True
+  "is_tensorboardX": false # dont modify, should be removed
+  "sumo_home": "/home/ncarrara/sumo_binaries/bin" # dont modify, should be removed
+  "workspace": "data" # where everything will be stored, model, data, plots etc
+  "logging": # classic logging dict. A lot of stuff using print() should actually be logged.
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+
+

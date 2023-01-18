@@ -1,0 +1,421 @@
+
+"jobs":
+  "save_between_jobs": True
+  "jobs_list":
+    - "create_datasets"
+    - "learn_gans"
+    - "cross_comparaison"
+    - "test_models"
+    - "transfer"
+    - "print_transfer_results"
+
+
+
+"cross_comparaison":
+  "nb_samples": 2000
+  "nb_episodes": 100
+
+"create_datasets":
+  "n_episodes": 1000
+
+"transfer":
+  "baselines":
+    "solution_3":
+      "gan_baseline": "hello_super_gan"
+      "stop_transfer_mechanism": False
+      "baseline": "solution_3"
+      "eval_interval": 10
+      "log_interval": 2
+      "plot_interval": 10
+      "initial_collect_steps": 0
+      "offset_step_collection": 0
+      "lambda_decay": 0.0025
+      "optimizer":
+        "name": "adam"
+        "params":
+          "lr": 0.001
+      "update_network_frequency": 10
+      "gamma": 0.99
+      "num_real_steps": 2000
+
+#    "dqn":
+#      "baseline": "dqn"
+#      "eval_interval": 500 # 1000 #100
+#      "log_interval": 100
+#      "plot_interval": 500
+#      "initial_collect_steps": 0
+#      "offset_step_collection": 0
+#      "optimizer":
+#        "name": "adam"
+#        "params":
+#          "lr": 0.001
+#      "gamma": 0.99 # 0.99
+#      "update_network_frequency": 10 # 100 #TODO 100
+#      "lambda_decay": 0.00025
+#      "num_real_steps": 20000
+
+    "dyna_perfect":
+      "baseline": "dyna_perfect"
+      "eval_interval": 10
+      "log_interval": 2
+      "plot_interval": 10
+      "initial_collect_steps": 0
+      "offset_step_collection": 0
+      "lambda_decay": 0.0025
+      "optimizer":
+        ##    "name": "rmsprop"
+        #    "params": {}
+        "name": "adam"
+        "params":
+          "lr": 0.001
+      "update_network_frequency": 10
+      "gamma": 0.99
+      "num_real_steps": 2000
+#
+    "dyna_imperfect":
+      "gan_baseline": "one_gan_by_env"
+      "baseline": "dyna_pretrained"
+      "eval_interval": 10 # 1000 #100
+      "log_interval": 2
+      "plot_interval": 10
+      "initial_collect_steps": 0
+      "offset_step_collection": 0
+      "lambda_decay": 0.0025
+      "optimizer":
+        ##    "name": "rmsprop"
+        #    "params": {}
+        "name": "adam"
+        "params":
+          "lr": 0.001
+      "update_network_frequency": 10
+      "gamma": 0.99
+      "num_real_steps": 2000
+
+
+
+#    "dyna_model_learning":
+#      "baseline": "dyna_model_learning"
+#      "eval_interval": 20
+#      "log_interval": 4
+#      "plot_interval": 50
+#      "initial_collect_steps": 0
+#      "offset_step_collection": 0
+#      "lambda_decay": 0.0025
+#      "optimizer":
+#        "name": "adam"
+#        "params":
+#          "lr": 0.001
+#      "update_network_frequency": 10
+#      "gamma": 0.99
+#      "num_real_steps": 2000
+
+#    "dyna_rdm":
+#      "gan_baseline": "one_gan_by_env"
+#      "baseline": "dyna_rdm"
+#      "eval_interval": 10 # 1000 #100
+#      "log_interval": 2
+#      "plot_interval": 50
+#      "initial_collect_steps": 0
+#      "offset_step_collection": 0
+#      "lambda_decay": 0.0025
+#      "optimizer":
+#        ##    "name": "rmsprop"
+#        #    "params": {}
+#        "name": "adam"
+#        "params":
+#          "lr": 0.001
+#      "update_network_frequency": 10
+#      "gamma": 0.99
+#      "num_real_steps": 2000
+
+    "dyna_agglo":
+      "gan_baseline": "hello_agglo_gan"
+      "baseline": "dyna_agglo"
+      "eval_interval": 10 # 1000 #100
+      "log_interval": 2
+      "plot_interval": 50
+      "initial_collect_steps": 0
+      "offset_step_collection": 0
+      "lambda_decay": 0.0025
+      "optimizer":
+        ##    "name": "rmsprop"
+        #    "params": {}
+        "name": "adam"
+        "params":
+          "lr": 0.001
+      "update_network_frequency": 10
+      "gamma": 0.99
+      "num_real_steps": 2000
+
+#    "dqn_extra_updates_bootstrapped":
+#      "baseline": "dqn_extra_updates"
+#      "lambda_decay": 0.0025 # must explore a bit more "non random" samples since most all init_step are randomize
+#      "eval_interval": 50
+#      "log_interval": 10
+#      "plot_interval": 50
+#      "initial_collect_steps": 1000
+#      "offset_step_collection": 1000
+#      "optimizer":
+#        "name": "adam"
+#        "params":
+#          "lr": 0.001
+#      "gamma": 0.99 # 0.99 loss diverges
+#      "update_network_frequency": 10 # 100
+#      "num_real_steps": 2000
+
+    "dqn_extra_updates":
+      "baseline": "dqn_extra_updates"
+      "lambda_decay": 0.0025 # must explore a bit more "non random" samples since most all init_step are randomize
+      "eval_interval": 50 # 1000 #100
+      "log_interval": 10
+      "plot_interval": 50
+      "initial_collect_steps": 0 #250
+      "offset_step_collection": 0
+      "optimizer":
+        "name": "adam"
+        "params":
+          "lr": 0.001
+      "gamma": 0.99 # 0.99 loss diverges
+      "update_network_frequency": 10 # 100
+      "num_real_steps": 2000
+
+    "dqn_extra_steps":
+      "baseline": "dqn_extra_steps"
+      "lambda_decay": 0.0025 # must explore a bit more "non random" samples since most all init_step are randomize
+      "eval_interval": 10 # 1000 #100
+      "log_interval": 2
+      "plot_interval": 50
+      "initial_collect_steps": 0 #250
+      "offset_step_collection": 0
+      "optimizer":
+        "name": "adam"
+        "params":
+          "lr": 0.001
+      "gamma": 0.99 # 0.99 loss diverges
+      "update_network_frequency": 10 # 100
+      "num_real_steps": 2000
+
+  "q_model":
+    "class": "FeedForwardQModel"
+    "params":
+      "layers": [128]
+
+  "planning_init_replay_buffer_max_length": 32
+  "fake_steps_replay_buffer_max_length": 1024
+  "stop_mean_return": [5,200]
+  "nb_runs": 1
+  "use_tf_agent": False # False
+  "eps_start": 0.5 # 0.5 1.0
+  "minibatch_size": 128
+  "num_eval_episodes": 50
+  # INTERVALS #
+  "log_target_model_performance_interval": 50
+  "training_interval": 1
+  "update_accuracy_interval": 1
+  "check_stop_transfer_interval": 1
+  "update_model_interval": 1
+  "use_true_done_to_stop_prediction": True
+  "replay_buffer_max_length": 100000
+  "shape": [5,200]
+  "action_selection_for_model_prediction": "greedy" #"random" #"greedy" # "random" # greedy
+
+  "target_gan_config":
+    "D_n_updates": 1
+    "G_n_updates": 1
+    "models_to_learn":
+      "reward":
+        "D_hidden_layers": [ 16 ]
+        "G_hidden_layers": [ 1 ]
+        "stop":
+          "max_epochs": 50000 #1500
+          "testing_loss_treshold": 0.015
+        "D_optimizer":
+          "type": "adam"
+          "params":
+            "learning_rate": 0.001 #2e-4
+            "beta_1": 0.5
+        "G_optimizer":
+          "type": "adam"
+          "params":
+            "learning_rate": 0.001 #2e-4
+            "beta_1": 0.5
+      "dynamics":
+        "D_hidden_layers": [128]
+        "G_hidden_layers": [128]
+        "stop":
+          "max_epochs": 50000 #1500
+          "testing_loss_treshold": 0.015
+        "D_optimizer":
+          "type": "adam"
+          "params":
+            "learning_rate": 0.001 #2e-4
+            "beta_1": 0.5
+        "G_optimizer":
+          "type": "adam"
+          "params":
+            "learning_rate": 0.001 #2e-4
+            "beta_1": 0.5
+    "type": "classic" # "wasserstein"
+    "z_size": 1 #5
+    "D_activation": "tanh"
+    "G_activation": "tanh"
+    "use_bce_tf_function": False
+
+
+
+"learn_gans":
+
+  "baselines":
+    "hello_super_gan":
+      "type": "super_gan"
+      "buffer_size_by_source_env": 2500
+      "reward":
+        "D_hidden_layers": [ 16 ]
+        "G_hidden_layers": [ 1 ]
+        "stop":
+          "max_epochs": 50000 #1500
+          "testing_loss_treshold": 0.015
+        "D_optimizer":
+          "type": "adam"
+          "params":
+            "learning_rate": 0.001 #2e-4
+            "beta_1": 0.5
+        "G_optimizer":
+          "type": "adam"
+          "params":
+            "learning_rate": 0.001 #2e-4
+            "beta_1": 0.5
+      "dynamics":
+        "D_hidden_layers": [128]
+        "G_hidden_layers": [128]
+        "stop":
+          "max_epochs": 50000 #1500
+          "testing_loss_treshold": 0.005
+        "D_optimizer":
+          "type": "adam"
+          "params":
+            "learning_rate": 0.001 #2e-4
+            "beta_1": 0.5
+        "G_optimizer":
+          "type": "adam"
+          "params":
+            "learning_rate": 0.001 #2e-4
+            "beta_1": 0.5
+
+    "one_gan_by_env":
+      "type": "classic"
+      "buffer_size_by_source_env": 2500
+      "reward":
+        "D_hidden_layers": [ 16 ]
+        "G_hidden_layers": [ 1 ]
+        "stop":
+          "max_epochs": 50000 #1500
+          "testing_loss_treshold": 0.015
+        "D_optimizer":
+          "type": "adam"
+          "params":
+            "learning_rate": 0.001 #2e-4
+            "beta_1": 0.5
+        "G_optimizer":
+          "type": "adam"
+          "params":
+            "learning_rate": 0.001 #2e-4
+            "beta_1": 0.5
+      "dynamics":
+        "D_hidden_layers": [128]
+        "G_hidden_layers": [128]
+        "stop":
+          "max_epochs": 50000 #1500
+          "testing_loss_treshold": 0.01
+        "D_optimizer":
+          "type": "adam"
+          "params":
+            "learning_rate": 0.001 #2e-4
+            "beta_1": 0.5
+        "G_optimizer":
+          "type": "adam"
+          "params":
+            "learning_rate": 0.001 #2e-4
+            "beta_1": 0.5
+    "hello_agglo_gan":
+      "type": "agglomerated_gan"
+      "buffer_size_by_source_env": 2500
+      "reward":
+        "D_hidden_layers": [ 16 ]
+        "G_hidden_layers": [ 1 ]
+        "stop":
+          "max_epochs": 50000 #1500
+          "testing_loss_treshold": 0.015
+        "D_optimizer":
+          "type": "adam"
+          "params":
+            "learning_rate": 0.001 #2e-4
+            "beta_1": 0.5
+        "G_optimizer":
+          "type": "adam"
+          "params":
+            "learning_rate": 0.001 #2e-4
+            "beta_1": 0.5
+      "dynamics":
+        "D_hidden_layers": [128]
+        "G_hidden_layers": [128]
+        "stop":
+          "max_epochs": 50000 #1500
+          "testing_loss_treshold": 0.01
+        "D_optimizer":
+          "type": "adam"
+          "params":
+            "learning_rate": 0.001 #2e-4
+            "beta_1": 0.5
+        "G_optimizer":
+          "type": "adam"
+          "params":
+            "learning_rate": 0.001 #2e-4
+            "beta_1": 0.5
+
+  "batch_size": "max"
+  "lambda_penalize_high_entropy": null #0.
+  "sum_fake_and_real_for_entropy": null
+  "lambda_": 0
+  "D_n_updates": 1
+  "G_n_updates": 1
+  "learn_targets": True
+  "use_bce_tf_function": False
+  "factorize_fake_output": True
+  "z_size": 1 #5
+  "D_activation": "tanh"
+  "G_activation": "tanh"
+
+
+
+"general":
+  "id": "example"
+  "seed": 0
+  "repeat": 1
+  "multiprocessing": False
+  "is_tensorboardX": false
+  "sumo_home": "/home/ncarrara/sumo_binaries/bin"
+  "workspace": "tmp"
+  "logging":
+    "version": 1
+    "disable_existing_loggers": false
+    "formatters":
+      "standard":
+        "format": "[%(name)s] %(levelname)s - %(message)s"
+    "handlers":
+      "default":
+        "level": "WARNING"
+        "formatter": "standard"
+        "class": "logging.StreamHandler"
+    "loggers":
+      "":
+        "handlers": ["default"]
+        "level": "WARNING"
+        "propagate": false
+      "some.logger.you.want.to.enable.in.the.code":
+        "handlers": ["default"]
+        "level": "ERROR"
+        "propagate": false
+
+"envs_collection": "cp_length_easy"
+"onehot_action": True
