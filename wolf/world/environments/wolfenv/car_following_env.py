@@ -680,7 +680,7 @@ class CarFollowingEnv(WolfEnv):
         done = {key: key.lstrip('veh_') in self.k.vehicle.get_arrived_rl_ids()
                 for key in states.keys()}
         if crash or (self.time_counter >= self.env_params.sims_per_step *
-                     (self.env_params.warmup_steps + self.env_params.horizon)):
+                     (self.sim_params.warmup_simsteps + self.env_params.horizon)):
             done['__all__'] = True
         else:
             done['__all__'] = False
@@ -801,7 +801,7 @@ class CarFollowingEnv(WolfEnv):
                 speed = self.k.vehicle.get_speed(veh_id)
 
                 accel = None
-                if ((self.time_counter <= self.env_params.warmup_steps+1 and \
+                if ((self.time_counter <= self.sim_params.warmup_simsteps+1 and \
                     veh_id in self.k.vehicle.get_rl_ids()) or \
                     (veh_id not in self.k.vehicle.get_controlled_ids() and \
                     veh_id not in self.k.vehicle.get_rl_ids())) and veh_id in self.history_record:
@@ -903,7 +903,7 @@ class CarFollowingEnv(WolfEnv):
                                                    }
 
         if done or crash or self.time_counter >= self.env_params.sims_per_step * \
-            (self.env_params.warmup_steps + self.env_params.horizon):
+            (self.sim_params.warmup_simsteps + self.env_params.horizon):
             # Episodes end, dump all records
 
             # Replace rl agents accelerations
@@ -1022,7 +1022,7 @@ class ClosedRoadNetCarFollowing(CarFollowingEnv):
         vehicles.add(
             veh_id="human",
             lane_change_controller=(SimLaneChangeController, {}),
-            routing_controller=(ContinuousRouter, {}),
+            # routing_controller=(ContinuousRouter, {}),
             car_following_params=SumoCarFollowingParams(
                 speed_mode="all_checks",
                 max_speed=50
@@ -1035,7 +1035,7 @@ class ClosedRoadNetCarFollowing(CarFollowingEnv):
         vehicles.add(
             veh_id="followerstopper",
             acceleration_controller=(RLController, {}),
-            routing_controller=(ContinuousRouter, {}),
+            # routing_controller=(ContinuousRouter, {}),
             car_following_params=SumoCarFollowingParams(
                 speed_mode="right_of_way",
                 accel=3,
@@ -1132,13 +1132,13 @@ class ClosedRoadNetCarFollowing(CarFollowingEnv):
         }
         # Generate the env_params
         env_params = dict(
-            warmup_steps=200,
             sims_per_step=1,
             horizon=horizon,
             additional_params=additional_env_params
         )
         if sim_params is None:
             sim_params = dict(
+                warmup_simsteps=200,
                 sim_step=0.1,
                 render=False,
                 print_warnings=False,
