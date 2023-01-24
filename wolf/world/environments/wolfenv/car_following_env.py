@@ -23,6 +23,7 @@ import os
 import time
 import random
 from wolf.config import WOLF_PATH
+from numpy import pi, sin, cos, linspace
 
 
 ADDITIONAL_NET_PARAMS = {
@@ -31,7 +32,7 @@ ADDITIONAL_NET_PARAMS = {
     # edge speed limit
     'speed_limit': 30,
     # length of the network
-    'length': 985,
+    'length': 3*985,
     # width of the network
     'width': 100
 }
@@ -145,7 +146,7 @@ class CarFollowingNetwork(Network):
                 "length": self._length / 2 - shift_width,
                 "spreadType": "center",
                 "numLanes": self._num_lanes,
-                "speed": self._speed if self._speed else 20
+                "speed": self._speed if self._speed else 28
             },
             {
                 "id": "3",
@@ -155,7 +156,7 @@ class CarFollowingNetwork(Network):
                 "length": np.pi * r,
                 "spreadType": "center",
                 "numLanes": self._num_lanes,
-                "speed": self._speed if self._speed else 15
+                "speed": self._speed if self._speed else 28
             },
             {
                 "id": "4",
@@ -164,7 +165,7 @@ class CarFollowingNetwork(Network):
                 "length": self._length,
                 "spreadType": "center",
                 "numLanes": self._num_lanes,
-                "speed": self._speed if self._speed else 25
+                "speed": self._speed if self._speed else 20
             },
             {
                 "id": "5",
@@ -174,7 +175,7 @@ class CarFollowingNetwork(Network):
                 "length": np.pi * r,
                 "spreadType": "center",
                 "numLanes": self._num_lanes,
-                "speed": self._speed if self._speed else 15
+                "speed": self._speed if self._speed else 28
             },
             {
                 "id": "6",
@@ -183,7 +184,7 @@ class CarFollowingNetwork(Network):
                 "length": self._length / 2 - shift_width,
                 "spreadType": "center",
                 "numLanes": self._num_lanes,
-                "speed": self._speed if self._speed else 17.5
+                "speed": self._speed if self._speed else 28
             },
             {
                 "id": "7",
@@ -192,7 +193,7 @@ class CarFollowingNetwork(Network):
                 "length": (end_pt_shift_width**2 + (self._width / 4)**2)**0.5,
                 "spreadType": "center",
                 "numLanes": self._num_lanes,
-                "speed": self._speed if self._speed else 10
+                "speed": self._speed if self._speed else 28
             },
             {
                 "id": "8",
@@ -201,7 +202,7 @@ class CarFollowingNetwork(Network):
                 "length": 2 * shift_width,
                 "spreadType": "center",
                 "numLanes": self._num_lanes,
-                "speed": self._speed if self._speed else 17.5
+                "speed": self._speed if self._speed else 28
             }
         ]
         return edges
@@ -251,6 +252,152 @@ class CarFollowingNetwork(Network):
                 ("2", (10**2 + (self._width / 4)**2)**0.5+22.6)] 
 
 
+class CarFollowingRingNetwork(Network):
+    def __init__(
+        self,
+        name,
+        vehicles,
+        net_params,
+        initial_config=InitialConfig(),
+        traffic_lights=TrafficLightParams(),
+        detector_params=None):
+
+        for p in ADDITIONAL_NET_PARAMS.keys():
+            if p not in net_params.additional_params:
+                raise KeyError('Network parameter "{}" not supplied'.format(p))
+
+        scaling = net_params.additional_params.get("scaling", 1)
+        assert (isinstance(scaling, int)), "Scaling must be an int"
+        self._num_lanes = 1 * scaling
+
+        self._speed = net_params.additional_params['speed_limit']
+        
+
+        super().__init__(name, vehicles, net_params, initial_config,
+                         traffic_lights)
+
+    def specify_nodes(self, net_params):
+        """See parent class."""
+        length = net_params.additional_params["length"]
+        r = length / (2 * pi)
+
+        nodes = [{
+            "id": "bottom",
+            "x": 0,
+            "y": -r
+        }, {
+            "id": "right",
+            "x": r,
+            "y": 0
+        }, {
+            "id": "top",
+            "x": 0,
+            "y": r
+        }, {
+            "id": "left",
+            "x": -r,
+            "y": 0
+        }]
+
+        return nodes
+
+
+    def specify_edges(self, net_params):
+        """See parent class."""
+        length = 2400
+        resolution = 40
+        r = length / (2 * pi)
+        edgelen = length / 4
+
+
+        edges = [
+            {
+                "id": "bottom",
+                "from": "bottom",
+                "to": "right",
+                "shape": [(r * cos(t), r * sin(t))  for t in linspace(-pi / 2, 0, resolution)],
+                "length": edgelen,
+                "spreadType": "center",
+                "numLanes": self._num_lanes,
+                "speed": self._speed if self._speed else 23
+            },
+            {
+                "id": "right",
+                "from": "right",
+                "to": "top",
+                "shape": [(r * cos(t), r * sin(t))  for t in linspace(0, pi / 2, resolution)],
+                "length": edgelen,
+                "spreadType": "center",
+                "numLanes": self._num_lanes,
+                "speed": self._speed if self._speed else 23
+            },
+            {
+                "id": "top",
+                "from": "top",
+                "to": "left",
+                "shape": [(r * cos(t), r * sin(t)) for t in linspace(pi / 2, pi, resolution)],
+                "length": edgelen,
+                "spreadType": "center",
+                "numLanes": self._num_lanes,
+                "speed": self._speed if self._speed else 23
+            },
+            {
+                "id": "left",
+                "from": "left",
+                "to": "bottom",
+                "shape": [(r * cos(t), r * sin(t))  for t in linspace(pi, 3 * pi / 2, resolution)],
+                "length": edgelen,
+                "spreadType": "center",
+                "numLanes": self._num_lanes,
+                "speed": self._speed if self._speed else 15
+            },
+        ]
+        return edges
+
+    def specify_centroids(self, net_params):
+        """See parent class."""
+        centroids = []
+        centroids += [{
+            "id": "1",
+            "from": None,
+            "to": "1",
+            "x": -30,
+            "y": 0,
+        }]
+        centroids += [{
+            "id": "1",
+            "from": "5",
+            "to": None,
+            "x": 985 + 30,
+            "y": 0,
+        }]
+        return centroids
+
+    def specify_routes(self, net_params):
+        """See parent class."""
+        rts = {
+            "top": ["top", "left", "bottom", "right"],
+            "left": ["left", "bottom", "right", "top"],
+            "bottom": ["bottom", "right", "top", "left"],
+            "right": ["right", "top", "left", "bottom"]
+        }
+
+        return rts
+
+    def specify_edge_starts(self):
+        """See parent class."""
+        ring_length = 1200
+        junction_length = 0  # length of inter-edge junctions
+
+        edgestarts = [("bottom", 0),
+                      ("bottom", 10),
+                    #   ("top", 0.5 * ring_length + 2 * junction_length),
+                    #   ("left", 0.75 * ring_length + 3 * junction_length)]
+        ]
+        return edgestarts
+
+
+
 
 class CarFollowingStraightNetwork(Network):
     def __init__(
@@ -280,37 +427,37 @@ class CarFollowingStraightNetwork(Network):
             },
             {
                 "id": "2",
-                "x": 100,
-                "y": 0
-            },
-            {
-                "id": "3",
                 "x": 300,
                 "y": 0
             },
             {
+                "id": "3",
+                "x": 700,
+                "y": 0
+            },
+            {
                 "id": "4",
-                "x": 600,
+                "x": 1100,
                 "y": 0
             },
             {
                 "id": "5",
-                "x": 1000,
+                "x": 1600,
                 "y": 0
             },
             {
                 "id": "6",
-                "x": 1500,
+                "x": 2400,
                 "y": 0
             },
             {
                 "id": "7",
-                "x": 2000,
+                "x": 3000,
                 "y": 0
             },
             {
                 "id": "8",
-                "x": 2400,
+                "x": 3500,
                 "y": 0
             },
         ]
@@ -322,7 +469,7 @@ class CarFollowingStraightNetwork(Network):
                 "id": "1",
                 "from": "1",
                 "to": "2",
-                "length": 100,
+                "length": 300,
                 "spreadType": "center",
                 "numLanes": self._num_lanes,
                 "speed": self._speed if self._speed else 10
@@ -331,7 +478,7 @@ class CarFollowingStraightNetwork(Network):
                 "id": "2",
                 "from": "2",
                 "to": "3",
-                "length": 200,
+                "length": 400,
                 "spreadType": "center",
                 "numLanes": self._num_lanes,
                 "speed": self._speed if self._speed else 15
@@ -340,7 +487,7 @@ class CarFollowingStraightNetwork(Network):
                 "id": "3",
                 "from": "3",
                 "to": "4",
-                "length": 300,
+                "length": 400,
                 "spreadType": "center",
                 "numLanes": self._num_lanes,
                 "speed": self._speed if self._speed else 17.5
@@ -349,7 +496,7 @@ class CarFollowingStraightNetwork(Network):
                 "id": "4",
                 "from": "4",
                 "to": "5",
-                "length": 400,
+                "length": 500,
                 "spreadType": "center",
                 "numLanes": self._num_lanes,
                 "speed": self._speed if self._speed else 20
@@ -358,16 +505,16 @@ class CarFollowingStraightNetwork(Network):
                 "id": "5",
                 "from": "5",
                 "to": "6",
-                "length": 500,
+                "length": 800,
                 "spreadType": "center",
                 "numLanes": self._num_lanes,
-                "speed": self._speed if self._speed else 25
+                "speed": self._speed if self._speed else 23
             },
             {
                 "id": "6",
                 "from": "6",
                 "to": "7",
-                "length": 500,
+                "length": 600,
                 "spreadType": "center",
                 "numLanes": self._num_lanes,
                 "speed": self._speed if self._speed else 20
@@ -376,10 +523,10 @@ class CarFollowingStraightNetwork(Network):
                 "id": "7",
                 "from": "7",
                 "to": "8",
-                "length": 400,
+                "length": 500,
                 "spreadType": "center",
                 "numLanes": self._num_lanes,
-                "speed": self._speed if self._speed else 15
+                "speed": self._speed if self._speed else 18
             },
         ]
         return edges
@@ -680,7 +827,7 @@ class CarFollowingEnv(WolfEnv):
         done = {key: key.lstrip('veh_') in self.k.vehicle.get_arrived_rl_ids()
                 for key in states.keys()}
         if crash or (self.time_counter >= self.env_params.sims_per_step *
-                     (self.sim_params.warmup_simsteps + self.env_params.horizon)):
+                     (self.env_params.warmup_steps + self.env_params.horizon)):
             done['__all__'] = True
         else:
             done['__all__'] = False
@@ -801,7 +948,7 @@ class CarFollowingEnv(WolfEnv):
                 speed = self.k.vehicle.get_speed(veh_id)
 
                 accel = None
-                if ((self.time_counter <= self.sim_params.warmup_simsteps+1 and \
+                if ((self.time_counter <= self.env_params.warmup_steps+1 and \
                     veh_id in self.k.vehicle.get_rl_ids()) or \
                     (veh_id not in self.k.vehicle.get_controlled_ids() and \
                     veh_id not in self.k.vehicle.get_rl_ids())) and veh_id in self.history_record:
@@ -832,11 +979,12 @@ class CarFollowingEnv(WolfEnv):
                 gap = np.nan
                 time_headway = np.nan
                 ttc = np.nan
+                target_hw = np.nan
                 if lead_veh is not None:
                     # Some corner case (i.e., around joints), use `get_lane_leaders` instead
                     gap = self.k.vehicle.get_headway(veh_id)
                     lead_veh_speed = self.k.vehicle.get_speed(lead_veh)
-                    
+                    target_hw=0.207 * np.log(lead_veh_speed) +0.226
                     # Calculate time_headway
                     if speed > 0:
                         time_headway = gap / speed
@@ -873,6 +1021,7 @@ class CarFollowingEnv(WolfEnv):
 
                 # Save record to the corresponding object
                 if veh_id in self.history_record:
+
                     self.history_record[veh_id]['speed'].append(speed)
                     self.history_record[veh_id]['ttc'].append(ttc)
                     self.history_record[veh_id]['time_headway'].append(time_headway)
@@ -884,6 +1033,7 @@ class CarFollowingEnv(WolfEnv):
                     self.history_record[veh_id]['follow_distance_headway'].append(follow_distance_headway)
                     self.history_record[veh_id]['follow_ttc'].append(follow_ttc)
                     self.history_record[veh_id]['follow_veh_speed'].append(follow_veh_speed)
+                    self.history_record[veh_id]['target_hw'].append(target_hw)
 
                     if accel is not None:
                         self.history_record[veh_id]['accel'].append(accel)
@@ -892,6 +1042,7 @@ class CarFollowingEnv(WolfEnv):
                                                    'accel': [np.nan]*(self.time_counter-1) if accel is None else [np.nan]*(self.time_counter-1) + [accel],
                                                    'ttc': [np.nan]*(self.time_counter-1) + [ttc],
                                                    'time_headway': [np.nan]*(self.time_counter-1) + [time_headway],
+                                                   'target_hw': [np.nan]*(self.time_counter-1) + [time_headway],
                                                    'gap': [np.nan]*(self.time_counter-1) + [gap],
                                                    'position': [np.nan]*(self.time_counter-1) + [position],
                                                    'lv_speed': [np.nan]*(self.time_counter-1) + [lead_veh_speed],
@@ -903,7 +1054,7 @@ class CarFollowingEnv(WolfEnv):
                                                    }
 
         if done or crash or self.time_counter >= self.env_params.sims_per_step * \
-            (self.sim_params.warmup_simsteps + self.env_params.horizon):
+            (self.env_params.warmup_steps + self.env_params.horizon):
             # Episodes end, dump all records
 
             # Replace rl agents accelerations
@@ -1022,7 +1173,7 @@ class ClosedRoadNetCarFollowing(CarFollowingEnv):
         vehicles.add(
             veh_id="human",
             lane_change_controller=(SimLaneChangeController, {}),
-            # routing_controller=(ContinuousRouter, {}),
+            routing_controller=(ContinuousRouter, {}),
             car_following_params=SumoCarFollowingParams(
                 speed_mode="all_checks",
                 max_speed=50
@@ -1035,7 +1186,7 @@ class ClosedRoadNetCarFollowing(CarFollowingEnv):
         vehicles.add(
             veh_id="followerstopper",
             acceleration_controller=(RLController, {}),
-            # routing_controller=(ContinuousRouter, {}),
+            routing_controller=(ContinuousRouter, {}),
             car_following_params=SumoCarFollowingParams(
                 speed_mode="right_of_way",
                 accel=3,
@@ -1132,13 +1283,13 @@ class ClosedRoadNetCarFollowing(CarFollowingEnv):
         }
         # Generate the env_params
         env_params = dict(
+            warmup_steps=200,
             sims_per_step=1,
             horizon=horizon,
             additional_params=additional_env_params
         )
         if sim_params is None:
             sim_params = dict(
-                warmup_simsteps=200,
                 sim_step=0.1,
                 render=False,
                 print_warnings=False,
