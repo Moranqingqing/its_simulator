@@ -87,7 +87,7 @@ env_config = {
 
     "sim_params": dict(
         sim_step=0.1,
-        render=True,
+        render=args.render,
         print_warnings=False,
         restart_instance=True,
     ),
@@ -336,7 +336,6 @@ for _ in range(args.episodes):
                 accels = batch_constrain_action(state, accels)
             
             action_dir = dict((agent_name, accel) for agent_name, accel in zip(agent_names, accels))
-            # print('action',action_dir)
             next_state, reward, done_dict, _ = env.step(action_dir)
             reward=0
             done=done_dict.get('__all__')
