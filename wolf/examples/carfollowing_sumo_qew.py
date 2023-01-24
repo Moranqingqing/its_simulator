@@ -17,7 +17,8 @@ import pandas as pd
 import pickle as pkl
 from ddpg import DDPG
 import random
-from wolf.world.environments.wolfenv.car_following_env import BasicCFMController, CarFollowingEnv, CarFollowingNetwork, CarFollowingStraightNetwork, CustomizedGippsController, CustomizedIDMController, CustomizedBCMController, CustomizedDummyController
+from wolf.world.environments.wolfenv.car_following_env import ClosedRoadNetCarFollowing, BasicCFMController, CarFollowingEnv, CarFollowingNetwork, CarFollowingStraightNetwork, CustomizedGippsController, CustomizedIDMController, CustomizedBCMController, CustomizedDummyController
+from wolf.world.environments.wolfenv.wolf_env import WolfEnv
 
 from flow.controllers import RLController, ContinuousRouter, \
     SimLaneChangeController, IDMController
@@ -27,8 +28,7 @@ logger = logging.getLogger('test')
 logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
 
-vehicles = VehicleParams()
-inflow = InFlows()
+
 
 SCALING = 10
 NUM_LANES = 4 * SCALING  # number of lanes in the widest highway
@@ -42,7 +42,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("--seed", default=0, help="Random seed")
 parser.add_argument("--save_dir", default="./saved_modelsnew/", help="Dir. path to load a model")
-parser.add_argument("--load_model", help="Path to load a model")
+parser.add_argument("--load_model", default=None, help="Path to load a model")
 parser.add_argument("--episodes", default=1, help="Num. of test episodes")
 parser.add_argument("--network", default="loop", choices=['loop', 'straight'])
 parser.add_argument("--speed-limit", default=None, type=int)
@@ -57,6 +57,8 @@ parser.add_argument("--perturbation-test", default=False, action="store_true", h
 parser.add_argument("--perturbation-rl-num", default=8, type=int, help="Set the number of rl vehicles in the perturbation test")
 parser.add_argument("--initial-speed", default=15, type=float, help="Set the initial speed of vehicles in the perturbation test")
 parser.add_argument("--render", default=False, action="store_true", help="Enable the render of the simulator")
+parser.add_argument("--f-eff-type", default=1, type=int, choices=[1, 2, 3], 
+                    help="Choose the type of f_eff, (1: maximum at 1.26s, 2: max at 0.8s, 3: max at 0s)")
 args = parser.parse_args()
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -65,72 +67,39 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 gamma = 0.99  # discount factor for reward (default: 0.99)
 tau = 0.001  # discount factor for model (default: 0.001)
 hidden_size = (400, 300)  # size of the hidden layers (Deepmind: 400 and 300; OpenAI: 64)
+HORIZON = 3000
 
 
-# inflow.add(
-#             veh_type="human",
-#             edge=7569212471,
-#             vehs_per_hour=flow_rate * (1 - AV_FRAC),
-#             departLane="random",
-#             departSpeed=0)
-# inflow.add(
-#             veh_type="human",
-#             edge=28455502,
-#             vehs_per_hour=flow_rate * (1 - AV_FRAC),
-#             departLane="random",
-#             departSpeed=0)
-
-vehicles = VehicleParams()
-vehicles.add(
-    veh_id="human",
-    lane_change_controller=(SimLaneChangeController, {}),
-    routing_controller=(ContinuousRouter, {}),
-    car_following_params=SumoCarFollowingParams(
-        speed_mode="all_checks",
-        max_speed=50
-    ),
-    lane_change_params=SumoLaneChangeParams(
-        lane_change_mode= 0b010101011001,
-    ),
-    num_vehicles=0) #5 * SCALING)
-
-vehicles.add(
-    veh_id="followerstopper",
-    acceleration_controller=(RLController, {}),
-    routing_controller=(ContinuousRouter, {}),
-    car_following_params=SumoCarFollowingParams(
-        speed_mode="right_of_way",
-        accel=3,
-        decel=3,
-    ),
-    lane_change_params=SumoLaneChangeParams(
-        lane_change_mode= 0b010101011001),
-    num_vehicles=5) #1 * SCALING) ##bug?? why over 5 will collide!
+additional_env_params = {
+    # For ADDITIONAL_ENV_PARAMS
+    "max_accel": 3,
+    "max_decel": 3,
+    "lane_change_duration": 5,
+    "disable_tb": True,
+    "disable_ramp_metering": True,
+    # For ADDITIONAL_RL_ENV_PARAMS
+    "target_velocity": 40,
+    "add_rl_if_exit": False
+}
 
 env_config = {
-    'agents_params': {
-        'name': 'all_the_same_vehicles_agents',
-        'params': {
-            'global_reward': False,
-            'default_policy': None,
-            'action_params': {
-                'name': 'VehActionConnector',
-                'params': {}
-            },
-            'obs_params': {
-                'name': 'CarFollowingConnector',
-                'params': {}
-            },
-            'reward_params': {
-                'name': 'VehRewardConnector',
-                'params': {'W2': 5, 'W4': 500,}
-            },
-        },
-    },
-    'multi_agent_config_params': {
-        'name': 'shared_policy',
-        'params': {}
-    },
+    "simulator": "traci",
+
+    "sim_params": dict(
+        sim_step=0.1,
+        render=True,
+        print_warnings=False,
+        restart_instance=True,
+    ),
+
+    "env_params": EnvParams(
+        sims_per_step=1,
+        horizon = HORIZON,
+        additional_params=additional_env_params,
+    ),
+    "env_state_params": None,
+    "group_agents_params": None,
+    "multi_agent_config_params": None,
     "agents_params": {
         "name": "all_the_same_vehicles_agents",
         "params": {
@@ -142,37 +111,27 @@ env_config = {
                 "params": {},
             },
             "obs_params": {
-                "name": "BCMObsConnector",
+                "name": "CarFollowingConnector",
                 "params": {}
             },
             "reward_params": {
-                "name": "BCMVehRewardConnector",
+                "name": "VehRewardConnector",
                 "params": {
                     "W1": [1, 1],
                     "W2": [1, 1],
                     "W3": [1, 1],
-                    "W4": [1, 1]
+                    "W4":  [0, 0],
+                    "f_eff_type": args.f_eff_type,
                 }
             }
         }
-    },
-    'group_agents_params': None,
-    'sim_params': {
-        'restart_instance': True,
-        'sim_step': 0.1,
-        'render': True,
-    },
-    'env_state_params': None,
-    'action_repeat_params': None,
-    'simulator': 'traci',
-    'record_flag': False,
-    'reward_folder': os.path.join(WOLF_PATH, 'temp@')
+    }
 }
 
 
 
 def batch_constrain_action(state, accels, epsilon=0.5):
-    veh_speed, rel_speed, distance_headway, follow_rel_speed, follow_distance_headway, speed_limit, prev_accel = np.split(state.cpu().numpy(), 7, axis=1)
+    veh_speed, rel_speed, distance_headway, speed_limit, prev_accel = np.split(state.cpu().numpy(), 5, axis=1)
 
     condition_1 = (distance_headway < 50) & (accels > 0)
     condition_2 = (veh_speed > speed_limit + epsilon)
@@ -200,9 +159,110 @@ elif args.controller == 'cfm':
 
 
 
+vehicles = VehicleParams()
+vehicles.add(
+    veh_id="human",
+    lane_change_controller=(SimLaneChangeController, {}),
+    # routing_controller=(ContinuousRouter, {}),
+    car_following_params=SumoCarFollowingParams(
+        speed_mode="all_checks",
+        max_speed=50
+    ),
+    lane_change_params=SumoLaneChangeParams(
+        lane_change_mode= 0b010101011001,
+    ),
+    num_vehicles=0) #5 * SCALING)
+
+vehicles.add(
+    veh_id="followerstopper",
+    acceleration_controller=(RLController, {}),
+    # routing_controller=(ContinuousRouter, {}),
+    car_following_params=SumoCarFollowingParams(
+        speed_mode="right_of_way",
+        accel=3,
+        decel=3,
+    ),
+    lane_change_params=SumoLaneChangeParams(
+        lane_change_mode= 0b010101011001),
+    num_vehicles=3) #1 * SCALING) ##bug?? why over 5 will collide!
+
+# Inflow Vehicles config
+# flow rate
+flow_rate = 1000 * SCALING
+# percentage of flow coming out of each lane
+inflow = InFlows()
+# inflow.add(
+#     veh_type="human",
+#     edge=458575912,
+#     vehs_per_hour=flow_rate * (1 - AV_FRAC),
+#     departLane="random",
+#     departSpeed=0)
+
+inflow.add(
+            veh_type="human",
+            edge='4253', ### circle ramp
+            vehs_per_hour=900,
+            departLane="random",
+            departSpeed=0)
+inflow.add(
+            veh_type="followerstopper",
+            edge='4254',
+            vehs_per_hour=1200,  ## side ramp
+            departLane="random",
+            departSpeed=0)
+
+inflow.add(
+            veh_type="human",
+            edge='4304', ## main
+            vehs_per_hour=12000,
+            departLane="random",
+            departSpeed=0)
 
 
-env = car_following_test(env_config)
+
+# Traffic Light Config
+traffic_lights = TrafficLightParams()
+# Network Config
+additional_net_params = {"scaling": SCALING, "speed_limit": 23,
+                            "length": 985, "width": 100}
+net_params = NetParams(
+    inflows=inflow,
+    template={'net': os.path.join(WOLF_PATH, 'sumo_net', 'sumo_qew_new', 'churchill_sumo_transfer.net.xml'), ## change the folder and file name here
+                'rou': os.path.join(WOLF_PATH, 'sumo_net', 'sumo_qew_new', 'churchill_sumo_transfer.rou.xml'),
+                'vtype': os.path.join(WOLF_PATH, 'sumo_net', 'sumo_qew_new', 'churchill_sumo_transfer.rou.xml'),
+                },
+    additional_params=additional_net_params)
+#        network = CarFollowingNetwork(
+#            name='car_following',
+#            vehicles=vehicles,
+#            net_params=net_params,
+#            initial_config=InitialConfig(),
+#            traffic_lights=traffic_lights,
+#        )
+network = Network(
+    name='car_following',
+    vehicles=vehicles,
+    net_params=net_params,
+    initial_config=InitialConfig(),
+    traffic_lights=traffic_lights
+)
+
+
+
+
+env: ClosedRoadNetCarFollowing = WolfEnv.create_env(
+    cls=ClosedRoadNetCarFollowing,
+    sim_params=env_config['sim_params'],
+    agents_params=env_config["agents_params"],
+    env_state_params=env_config["env_state_params"],
+    group_agents_params=env_config["group_agents_params"],
+    multi_agent_config_params=env_config["multi_agent_config_params"],
+    simulator=env_config["simulator"],
+    action_repeat_params=env_config.get("action_repeat_params", None),
+)
+
+
+# env = car_following_test(env_config)
 
 # Enable the environment recording
 env.record_train = False
@@ -235,12 +295,13 @@ if __name__ == "__main__":
     agent = DDPG(0.99,
                     0.001,
                     (400, 300),
-                    7, ##state space
+                    5, ##state space
                     np.array([1,]), ##action space
                     checkpoint_dir=checkpoint_dir
                     )
-    if args.controller == 'rl':
-        agent.load_checkpoint(args.load_model, training=False)
+    if args.load_model != None:
+        print('load pretrained model from:',checkpoint_dir)
+        agent.load_checkpoint(checkpoint_dir, training=True)
 
     # Load the agents parameters
     agent.set_eval()
@@ -264,14 +325,8 @@ for _ in range(args.episodes):
     while True:
         if args.controller == 'rl':
             states.append(state.cpu().numpy())
-
             Travel_distance=Travel_distance+state[0][0]*delta_T
-            # state[0][-1]=20
-            # print('speed',state[0][0], 'speed limit', state[0][3])
-            # print("State:", state)
             action = agent.calc_action(state, action_noise=None)
-            # print("Action:", action)
-            # print('action',type(action),action)
             actions.append(action)
             # if state[0][2]<20 and action>0:
             #     action=-2*action  ##take the brake if too close!!
@@ -283,7 +338,7 @@ for _ in range(args.episodes):
             action_dir = dict((agent_name, accel) for agent_name, accel in zip(agent_names, accels))
             # print('action',action_dir)
             next_state, reward, done_dict, _ = env.step(action_dir)
-            reward=reward.get('veh_followerstopper_0')
+            reward=0
             done=done_dict.get('__all__')
             episode_return += reward
             if done:
@@ -304,7 +359,7 @@ for _ in range(args.episodes):
             # lv_acc.append(human_ino['accel'])
             # np.save('lv_speed.npy',lv_speed)
             # np.save('lv_acc.npy',lv_acc)
-            print('travel distance',Travel_distance.cpu().numpy())
+            # print('travel distance',Travel_distance.cpu().numpy())
         else:
             next_state, reward, done, _ = env.step({})
             done = done.get('__all__')
