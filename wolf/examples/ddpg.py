@@ -69,12 +69,16 @@ class DDPG(object):
         hard_update(self.actor_target, self.actor)
         hard_update(self.critic_target, self.critic)
 
+        if os.path.isdir(checkpoint_dir)==False:
+            print('saved in ',checkpoint_dir)
+            os.mkdir(checkpoint_dir)
+
         # Set the directory to save the models
         if checkpoint_dir is None:
             self.checkpoint_dir = "./saved_models/"
         else:
             self.checkpoint_dir = checkpoint_dir
-        # os.makedirs(self.checkpoint_dir, exist_ok=True)
+        
         # logger.info('Saving all checkpoints to {}'.format(self.checkpoint_dir))
 
     def calc_action(self, state, action_noise=None, requires_grad=False):
@@ -218,8 +222,8 @@ class DDPG(object):
             self.critic_optimizer.load_state_dict(checkpoint['critic_optimizer'])
 
             replay_buffer = None
-            # if training:
-            #     replay_buffer = checkpoint['replay_buffer']
+            if training:
+                replay_buffer = checkpoint['replay_buffer']
 
             gc.collect()
             logger.info('Loaded model at timestep {} from {}'.format(start_timestep, checkpoint_path))
