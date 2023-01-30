@@ -22,6 +22,8 @@ from wolf.world.environments.wolfenv.wolf_env import WolfEnv
 
 from flow.controllers import RLController, ContinuousRouter, \
     SimLaneChangeController, IDMController
+from utils.replay_memory import ReplayMemory, Transition
+import time
 
 # Create logger
 logger = logging.getLogger('test')
@@ -43,9 +45,15 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--seed", default=0, help="Random seed")
 parser.add_argument("--save_dir", default="./saved_modelsnew/", help="Dir. path to load a model")
 parser.add_argument("--load_model", default=None, help="Path to load a model")
-parser.add_argument("--episodes", default=1, help="Num. of test episodes")
+parser.add_argument("--model-name", default='DDPG', help="trained model's name")
+parser.add_argument("--episodes", default=200, help="Num. of training episodes")
+parser.add_argument("--learning-steps", default=5000, help="Num. of training steps in each episode")
 parser.add_argument("--network", default="loop", choices=['loop', 'straight'])
 parser.add_argument("--speed-limit", default=None, type=int)
+parser.add_argument("--replay_size", default=1e6, type=int,
+                    help="Size of the replay buffer (default: 1e6; OpenAI: 1e5)")
+parser.add_argument("--batch_size", default=64, type=int,
+                    help="Batch size (default: 64; OpenAI: 128)")
 parser.add_argument("--speed-reward", default=True, action='store_true')
 parser.add_argument("--no-speed-reward", dest="speed_reward", action='store_false')
 parser.add_argument("--controller", default="rl", choices=["rl", "idm", "gipps"])
@@ -184,7 +192,7 @@ vehicles.add(
     ),
     lane_change_params=SumoLaneChangeParams(
         lane_change_mode= 0b010101011001),
-    num_vehicles=3) #1 * SCALING) ##bug?? why over 5 will collide!
+    num_vehicles=10) #1 * SCALING) ##bug?? why over 5 will collide!
 
 # Inflow Vehicles config
 # flow rate
@@ -197,26 +205,6 @@ inflow = InFlows()
 #     vehs_per_hour=flow_rate * (1 - AV_FRAC),
 #     departLane="random",
 #     departSpeed=0)
-
-inflow.add(
-            veh_type="human",
-            edge='4253', ### circle ramp
-            vehs_per_hour=900,
-            departLane="random",
-            departSpeed=0)
-inflow.add(
-            veh_type="followerstopper",
-            edge='4254',
-            vehs_per_hour=1200,  ## side ramp
-            departLane="random",
-            departSpeed=0)
-
-inflow.add(
-            veh_type="human",
-            edge='4304', ## main
-            vehs_per_hour=12000,
-            departLane="random",
-            departSpeed=0)
 
 
 
@@ -261,7 +249,10 @@ env: ClosedRoadNetCarFollowing = WolfEnv.create_env(
     action_repeat_params=env_config.get("action_repeat_params", None),
 )
 
-
+memory = ReplayMemory(int(args.replay_size))
+start_step = 0
+timestep = start_step // 10000 + 1
+episode_counter=0
 # env = car_following_test(env_config)
 
 # Enable the environment recording
@@ -270,7 +261,6 @@ env.record_eval = True
 env.trial_id = None
 
 env.reset() #env.env_params.horizon
-
 
 if __name__ == "__main__":
     
@@ -306,9 +296,10 @@ if __name__ == "__main__":
     # Load the agents parameters
     agent.set_eval()
     # controller='DDPG'
+    returns = list()
+
 for _ in range(args.episodes):
     step = 0
-    returns = list()
     states=[]
     actions=[]
     lv_speed=[]
@@ -322,7 +313,7 @@ for _ in range(args.episodes):
     episode_return = 0
     Travel_distance=0
     delta_T=0.1
-    while True:
+    for i in range(args.learning_steps):
         if args.controller == 'rl':
             states.append(state.cpu().numpy())
             Travel_distance=Travel_distance+state[0][0]*delta_T
@@ -337,19 +328,9 @@ for _ in range(args.episodes):
             
             action_dir = dict((agent_name, accel) for agent_name, accel in zip(agent_names, accels))
             next_state, reward, done_dict, _ = env.step(action_dir)
-            reward=0
+            reward=sum(reward.values())/len(reward.values())
             done=done_dict.get('__all__')
             episode_return += reward
-            if done:
-                next_state = None
-            else:
-                agent_names = list(next_state.keys())
-                for agent_name in done_dict:
-                    if done_dict[agent_name] and agent_name != '__all__':
-                        agent_names.remove(agent_name)
-                batch_state = np.array([next_state[agent_name] for agent_name in agent_names])
-                state = torch.Tensor(batch_state).to(device)
-
 
             record = env.history_record ## record info
             # human_ino=record.get('human_0')
@@ -359,15 +340,51 @@ for _ in range(args.episodes):
             # np.save('lv_speed.npy',lv_speed)
             # np.save('lv_acc.npy',lv_acc)
             # print('travel distance',Travel_distance.cpu().numpy())
+            agent_names = list(next_state.keys())
+            for agent_name in done_dict:
+                if done_dict[agent_name] and agent_name != '__all__':
+                    agent_names.remove(agent_name)
+            batch_state = np.array([next_state[agent_name] for agent_name in agent_names])
+            
+            mask = torch.Tensor([done]).to(device)
+            reward = torch.Tensor([reward]).to(device)
+            next_state = torch.Tensor([batch_state]).to(device)
+
+            for i in range(min(len(state),len(batch_state))):
+                state_= torch.reshape(state[0],(1,5))
+                next_state_=torch.reshape(next_state[0][i],(1,5))
+                action_=torch.reshape(action[i],(1,1))
+                memory.push(state_, action_, mask, next_state_, reward)
+        
+            
+            state = next_state[0]
+
+            epoch_value_loss = 0
+            epoch_policy_loss = 0
+
+            if len(memory) > args.batch_size:
+                transitions = memory.sample(args.batch_size)
+                # Transpose the batch
+                # (see http://stackoverflow.com/a/19343/3343043 for detailed explanation).
+                batch = Transition(*zip(*transitions))
+
+                # Update actor and critic according to the batch
+                value_loss, policy_loss = agent.update_params(batch)
+
+                epoch_value_loss += value_loss
+                epoch_policy_loss += policy_loss
+
+            if done:
+                episode_counter += 1
+                break
+
+
         else:
             next_state, reward, done, _ = env.step({})
             done = done.get('__all__')
 
         step += 1
-        if done:
-            logger.info(episode_return)
-            returns.append(episode_return)
-            break
+
 
     env_record = env.history_record
     env_global_metric = env.global_metric
@@ -376,25 +393,31 @@ for _ in range(args.episodes):
     stats = pd.DataFrame(env_record)
 
     # Some annotation for filename
-    save_dir = os.path.dirname(args.load_model)
-    model_name = os.path.basename(args.load_model)
+    save_dir = os.path.dirname(args.save_dir)
+    model_name = os.path.basename(args.model_name)
     curr_steps = ''
     if args.controller == 'rl':
         curr_steps = '_'+''.join(filter(str.isdigit, model_name))
     lv_str = 'lv' if args.lv else 'no-lv'
     speed_limit_str = args.speed_limit if args.speed_limit else 'dynamic'
     constraint_str = 'constrain' if args.constrain else 'no-constrain'
-    with open(os.path.join(save_dir, 
-        f'ddpg_test_qew_{curr_steps}_{args.controller}_{lv_str}_speed_{speed_limit_str}_{constraint_str}.pkl'), 'wb') as f:
-        pkl.dump(stats, f)
-    with open(os.path.join(save_dir, 
-        f'ddpg_test_qew_{curr_steps}_{args.controller}_{lv_str}_speed_{speed_limit_str}_{constraint_str}_global_metric.pkl'), 'wb') as f:
-        pkl.dump(env_global_metric, f)
+
+    agent.save_checkpoint(timestep, memory)
+    time_last_checkpoint = time.time()
+    logger.info('Saved model at {}'.format(time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.localtime())))
+    print('episode return',episode_return)
+    returns.append(episode_return)
+    np.save('returns.npy',returns)
+    # with open(os.path.join(save_dir, 
+    #     f'ddpg_test_qew_{curr_steps}_{args.controller}_{lv_str}_speed_{speed_limit_str}_{constraint_str}.pkl'), 'wb') as f:
+    #     pkl.dump(stats, f)
+    # with open(os.path.join(save_dir, 
+    #     f'ddpg_test_qew_{curr_steps}_{args.controller}_{lv_str}_speed_{speed_limit_str}_{constraint_str}_global_metric.pkl'), 'wb') as f:
+    #     pkl.dump(env_global_metric, f)
 
 
 
     # np.save('stateidmenv2.npy',states)
     # np.save('actionidmenv2.npy',actions)
-mean = np.mean(returns)
-variance = np.var(returns)
-logger.info("Score (on 100 episodes): {} +/- {}".format(mean, variance))
+
+env.close()
