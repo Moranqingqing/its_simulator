@@ -1210,13 +1210,13 @@ class ClosedRoadNetCarFollowing(CarFollowingEnv):
 
         inflow.add(
                     veh_type="human",
-                    edge='4253', ### circle ramp
+                    edge='4255.36', ### circle ramp
                     vehs_per_hour=900,
                     departLane="random",
                     departSpeed=0)
         inflow.add(
                     veh_type="followerstopper",
-                    edge='4254',
+                    edge='4255.36',
                     vehs_per_hour=1200,  ## side ramp
                     departLane="random",
                     departSpeed=0)
@@ -1227,6 +1227,14 @@ class ClosedRoadNetCarFollowing(CarFollowingEnv):
                     vehs_per_hour=12000,
                     departLane="random",
                     departSpeed=0)
+
+        inflow.add(
+                    veh_type="followerstopper",
+                    edge='4304', ## main
+                    vehs_per_hour=12000,
+                    departLane="random",
+                    departSpeed=0)
+
 
         # inflow.add(
         #             veh_type="human",
