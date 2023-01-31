@@ -128,7 +128,6 @@ class DDPG(object):
         reward_batch = torch.cat(batch.reward).to(device)
         done_batch = torch.cat(batch.done).to(device)
         next_state_batch = torch.cat(batch.next_state).to(device)
-
         # Get the actions and the state values to compute the targets
         next_action_batch = self.actor_target(next_state_batch)
         next_state_action_values = self.critic_target(next_state_batch, next_action_batch.detach())
@@ -161,7 +160,7 @@ class DDPG(object):
 
         return value_loss.item(), policy_loss.item()
 
-    def save_checkpoint(self, last_timestep, replay_buffer, last_episode=''):
+    def save_checkpoint(self, last_timestep,replay_buffer, model_name, last_episode=''):
         """
         Saving the networks and all parameters to a file in 'checkpoint_dir'
 
@@ -169,7 +168,7 @@ class DDPG(object):
             last_timestep:  Last timestep in training before saving
             replay_buffer:  Current replay buffer
         """
-        checkpoint_name = self.checkpoint_dir + '/ep_{}_{}.pth.tar'.format(last_episode, last_timestep)
+        checkpoint_name = self.checkpoint_dir + '/ep_{}_{}_{}.pth.tar'.format(last_episode, last_timestep, model_name)
         logger.info('Saving checkpoint...')
         checkpoint = {
             'last_timestep': last_timestep,

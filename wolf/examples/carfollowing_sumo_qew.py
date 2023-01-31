@@ -46,8 +46,8 @@ parser.add_argument("--seed", default=0, help="Random seed")
 parser.add_argument("--save_dir", default="./saved_modelsnew/", help="Dir. path to load a model")
 parser.add_argument("--load_model", default=None, help="Path to load a model")
 parser.add_argument("--model-name", default='DDPG', help="trained model's name")
-parser.add_argument("--episodes", default=200, help="Num. of training episodes")
-parser.add_argument("--learning-steps", default=5000, help="Num. of training steps in each episode")
+parser.add_argument("--episodes", default=2, help="Num. of training episodes")
+parser.add_argument("--learning-steps", default=5, help="Num. of training steps in each episode")
 parser.add_argument("--network", default="loop", choices=['loop', 'straight'])
 parser.add_argument("--speed-limit", default=None, type=int)
 parser.add_argument("--replay_size", default=1e6, type=int,
@@ -274,14 +274,6 @@ if __name__ == "__main__":
 
     checkpoint_dir = args.save_dir
 
-
-    # agent = DDPG(gamma,
-    #              tau,
-    #              hidden_size,
-    #              env.observation_space.shape[0],
-    #              env.action_space,
-    #              checkpoint_dir=checkpoint_dir
-    #              )
     agent = DDPG(0.99,
                     0.001,
                     (400, 300),
@@ -402,12 +394,12 @@ for _ in range(args.episodes):
     speed_limit_str = args.speed_limit if args.speed_limit else 'dynamic'
     constraint_str = 'constrain' if args.constrain else 'no-constrain'
 
-    agent.save_checkpoint(timestep, memory)
+    agent.save_checkpoint(timestep, memory,model_name=args.model_name)
     time_last_checkpoint = time.time()
     logger.info('Saved model at {}'.format(time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.localtime())))
     print('episode return',episode_return)
     returns.append(episode_return)
-    np.save('returns.npy',returns)
+    np.save(f'{checkpoint_dir}/eps_returns_{args.model_name}.npy',returns)
     # with open(os.path.join(save_dir, 
     #     f'ddpg_test_qew_{curr_steps}_{args.controller}_{lv_str}_speed_{speed_limit_str}_{constraint_str}.pkl'), 'wb') as f:
     #     pkl.dump(stats, f)
