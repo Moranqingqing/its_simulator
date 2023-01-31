@@ -43,11 +43,12 @@ AV_FRAC = 0.10
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--seed", default=0, help="Random seed")
-parser.add_argument("--checkpoint_dir", default="./saved_modelsnew/ep__1_DDPG.pth.tar", help="Dir. path to load a model")
+parser.add_argument("--checkpoint_dir", default="./saved_modelsnew/", help="Dir. path to load a model")
+parser.add_argument("--evaluation_dir", default="./evaluation_results/", help="Dir. path to save evaluation results")
 parser.add_argument("--load_model", default=None, help="Path to load a model")
-parser.add_argument("--model-name", default='dmacfmDDPG', help="trained model's name")
-parser.add_argument("--episodes", default=1, help="Num. of training episodes")
-parser.add_argument("--learning-steps", default=5000, help="Num. of training steps in each episode")
+parser.add_argument("--model-name", default='ep__1.pth.tar', help="trained model's name")
+parser.add_argument("--episodes", default=1, help="Num. of evaluating episodes")
+parser.add_argument("--learning-steps", default=5, help="Num. of training steps in each episode")
 parser.add_argument("--network", default="loop", choices=['loop', 'straight'])
 parser.add_argument("--speed-limit", default=None, type=int)
 parser.add_argument("--replay_size", default=1e6, type=int,
@@ -273,6 +274,7 @@ if __name__ == "__main__":
     np.random.seed(args.seed)
 
     checkpoint_dir = args.checkpoint_dir
+    model_name = args.model_name
 
     agent = DDPG(0.99,
                     0.001,
@@ -282,12 +284,11 @@ if __name__ == "__main__":
                     checkpoint_dir=checkpoint_dir
                     )
     if args.load_model != None:
-        print('load pretrained model from:',checkpoint_dir)
-        agent.load_checkpoint(checkpoint_dir, training=False)
+        print('load pretrained model from:', f"{checkpoint_dir}{model_name}")
+        agent.load_checkpoint(f"{checkpoint_dir}{model_name}", training=False)
 
     # Load the agents parameters
     agent.set_eval()
-    # controller='DDPG'
     returns = list()
 
 for _ in range(args.episodes):
@@ -325,7 +326,7 @@ for _ in range(args.episodes):
             episode_return += reward
 
             record = env.history_record ## record info
-            print('record',record)
+            print('record',len(record.keys()))
             # human_ino=record.get('human_0')
             # print('info',human_ino['speed'])
             # lv_speed.append(human_ino['speed'])
@@ -362,6 +363,11 @@ for _ in range(args.episodes):
 
     # Convert it to pandas DataFrame
     stats = pd.DataFrame(env_record)
+
+    if os.path.exists(args.evaluation_dir)==False:
+        os.mkdir(args.evaluation_dir)
+
+    stats.to_csv(f'{args.evaluation_dir}{args.model_name}.csv')
 
 
 
