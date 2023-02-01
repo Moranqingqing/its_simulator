@@ -48,7 +48,7 @@ parser.add_argument("--evaluation_dir", default="./evaluation_results/", help="D
 parser.add_argument("--load_model", default=None, help="Path to load a model")
 parser.add_argument("--model-name", default='ep__1.pth.tar', help="trained model's name")
 parser.add_argument("--episodes", default=1, help="Num. of evaluating episodes")
-parser.add_argument("--learning-steps", default=5, help="Num. of training steps in each episode")
+parser.add_argument("--learning-steps", default=5000, help="Num. of training steps in each episode")
 parser.add_argument("--network", default="loop", choices=['loop', 'straight'])
 parser.add_argument("--speed-limit", default=None, type=int)
 parser.add_argument("--replay_size", default=1e6, type=int,
@@ -312,8 +312,7 @@ for _ in range(args.episodes):
             Travel_distance=Travel_distance+state[0][0]*delta_T
             action = agent.calc_action(state, action_noise=None)
             actions.append(action)
-            # if state[0][2]<20 and action>0:
-            #     action=-2*action  ##take the brake if too close!!
+
 
             accels = action.cpu().numpy()
             if args.constrain:
@@ -326,14 +325,6 @@ for _ in range(args.episodes):
             episode_return += reward
 
             record = env.history_record ## record info
-            print('record',len(record.keys()))
-            # human_ino=record.get('human_0')
-            # print('info',human_ino['speed'])
-            # lv_speed.append(human_ino['speed'])
-            # lv_acc.append(human_ino['accel'])
-            # np.save('lv_speed.npy',lv_speed)
-            # np.save('lv_acc.npy',lv_acc)
-            # print('travel distance',Travel_distance.cpu().numpy())
             agent_names = list(next_state.keys())
             for agent_name in done_dict:
                 if done_dict[agent_name] and agent_name != '__all__':
@@ -351,6 +342,8 @@ for _ in range(args.episodes):
 
 
 
+
+
         else:
             next_state, reward, done, _ = env.step({})
             done = done.get('__all__')
@@ -362,12 +355,14 @@ for _ in range(args.episodes):
     env_global_metric = env.global_metric
 
     # Convert it to pandas DataFrame
-    stats = pd.DataFrame(env_record)
+    stats_local = pd.DataFrame(env_record)
+    stats_global = pd.DataFrame(env_global_metric)
 
     if os.path.exists(args.evaluation_dir)==False:
         os.mkdir(args.evaluation_dir)
 
-    stats.to_csv(f'{args.evaluation_dir}{args.model_name}.csv')
+    stats_local.to_csv(f'{args.evaluation_dir}{args.model_name}_local.csv')
+    stats_global.to_csv(f'{args.evaluation_dir}{args.model_name}_global.csv')
 
 
 
