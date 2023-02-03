@@ -18,7 +18,7 @@ misc/control-old/saved_models/dqn/main_center.h5
 e1Detector*
 
 .idea/inspectionProfiles/profiles_settings.xml
-
+wolf/examples/saved_modelsnew
 .idea/
 
 # Python egg metadata, regenerated from source files by setuptools.
@@ -83,6 +83,8 @@ condaenv.3aqm27fz.requirements.txt
 prediction/EDA/
 
 wolf/unittests/tmp/
+/home/jianshuaifeng/tianyu/its_simulator/wolf/examples/saved_modelsnew
+/home/jianshuaifeng/tianyu/its_simulator/flow
 
 rltl/main/data/
 
