@@ -45,10 +45,41 @@ class VehActionConnector(ActionConnector):
         #     if distance_headway < d_safe:
         #         print("Get here")
         #         action = [self.max_decel]
-
         action = action[0]
+        
         if self.veh_id in self._kernel.get_rl_vehicle_ids():
             self._kernel.apply_acceleration(self.veh_id, action)
+        else:
+            self._LOGGER.debug(f"For debugging, vehicle {self.veh_id} is currently not in the network")
+
+    def reset(self):
+        # Simply Return, we will see what to reset
+        return
+
+
+
+class VehActionConnector_lc(ActionConnector):
+
+    def __init__(self, connectors_ids, kernel=None):
+        self.veh_id = connectors_ids[0] # Expect only one id
+        self.reaction_time = 1
+        # TODO: Find a way to import config
+        self.max_decel = -3 # env_params.additional_params['max_decel']
+        self.max_accel = 3 # env_params.additional_params['max_accel']
+        
+        action_space = Box(low=np.array([self.max_decel, -3]), high=np.array([self.max_accel, 3]), dtype=np.float32)
+
+        super().__init__(action_space=action_space, kernel=kernel)
+        self._LOGGER = logging.getLogger(__name__)
+
+    def a_compute(self, action):
+        action=np.array(action)
+        acc = action[0]
+        direction=int(action[1]/3)
+        
+        if self.veh_id in self._kernel.get_rl_vehicle_ids():
+            self._kernel.apply_acceleration(self.veh_id, acc)
+            self._kernel.apply_lane_change(self.veh_id, direction)
         else:
             self._LOGGER.debug(f"For debugging, vehicle {self.veh_id} is currently not in the network")
 

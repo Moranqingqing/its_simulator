@@ -8,6 +8,8 @@ from wolf.world.environments.wolfenv.agents.connectors.action.exchange_change_ph
 from wolf.world.environments.wolfenv.agents.connectors.action.variable_phasing import VariablePhasingConnector
 from wolf.world.environments.wolfenv.agents.connectors.action.phase_select import PhaseSelectConnector
 from wolf.world.environments.wolfenv.agents.connectors.action.veh_act_connector import VehActionConnector
+from wolf.world.environments.wolfenv.agents.connectors.action.veh_act_connector import VehActionConnector_lc
+
 from wolf.world.environments.wolfenv.agents.connectors.observation.tdtse import TDTSEConnector
 from wolf.world.environments.wolfenv.agents.connectors.observation.mock import MockObservationConnector
 from wolf.world.environments.wolfenv.agents.connectors.observation.queue_obs_connector import QueueObservationConnector
@@ -136,6 +138,8 @@ R.register_connector("VariablePhasingConnector", VariablePhasingConnector)
 R.register_connector("CycleConnector", CycleConnector)
 R.register_connector("FixedOrderCycleConnector", FixedOrderCycleConnector)
 R.register_connector("VehActionConnector", VehActionConnector)
+R.register_connector("VehActionConnector_lc", VehActionConnector_lc)
+
 # reward connectors
 R.register_connector("QueueRewardConnector", QueueRewardConnector)
 R.register_connector("CumulativeDelayRewardConnector", DifferenceInCumulativeDelayRewardConnector)

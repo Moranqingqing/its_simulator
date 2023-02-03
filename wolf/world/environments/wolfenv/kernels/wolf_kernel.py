@@ -585,6 +585,10 @@ class WolfKernel:
     
     def apply_acceleration(self, veh_id, acc):
         self._flow_kernel.vehicle.apply_acceleration(veh_id, acc=acc)
+
+
+    def apply_lane_change(self, veh_id, direction):
+        self._flow_kernel.vehicle.apply_lane_change(veh_id, direction=direction)   
     
     def get_speed_limit_by_edge(self, edge):
         """ Return the speed limit of a given edge/junction """

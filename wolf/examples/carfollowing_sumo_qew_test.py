@@ -48,7 +48,7 @@ parser.add_argument("--evaluation_dir", default="./evaluation_results/", help="D
 parser.add_argument("--load_model", default=None, help="Path to load a model")
 parser.add_argument("--model-name", default='ep__1.pth.tar', help="trained model's name")
 parser.add_argument("--episodes", default=1, help="Num. of evaluating episodes")
-parser.add_argument("--learning-steps", default=5000, help="Num. of training steps in each episode")
+parser.add_argument("--evaluate-steps", default=5000, help="Num. of training steps in each episode")
 parser.add_argument("--network", default="loop", choices=['loop', 'straight'])
 parser.add_argument("--speed-limit", default=None, type=int)
 parser.add_argument("--replay_size", default=1e6, type=int,
@@ -116,7 +116,7 @@ env_config = {
             "default_policy": None,
 
             "action_params": {
-                "name": "VehActionConnector",
+                "name": "VehActionConnector_lc",
                 "params": {},
             },
             "obs_params": {
@@ -280,7 +280,7 @@ if __name__ == "__main__":
                     0.001,
                     (400, 300),
                     5, ##state space
-                    np.array([1,]), ##action space
+                    np.array([1,1]), ##action space need to change if two dimensions
                     checkpoint_dir=checkpoint_dir
                     )
     if args.load_model != None:
@@ -306,14 +306,12 @@ for _ in range(args.episodes):
     episode_return = 0
     Travel_distance=0
     delta_T=0.1
-    for i in range(args.learning_steps):
+    for i in range(args.evaluate_steps):
         if args.controller == 'rl':
             states.append(state.cpu().numpy())
             Travel_distance=Travel_distance+state[0][0]*delta_T
             action = agent.calc_action(state, action_noise=None)
             actions.append(action)
-
-
             accels = action.cpu().numpy()
             if args.constrain:
                 accels = batch_constrain_action(state, accels)
