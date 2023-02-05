@@ -393,9 +393,10 @@ if __name__ == "__main__":
             agent.save_checkpoint(eps, memory,model_name=args.model_name)
             time_last_checkpoint = time.time()
             logger.info('Saved model at {}'.format(time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.localtime())))
-            print('episode return',episode_return)
-            returns.append(episode_return)
-            print('returns',returns)
+            
+        print('episode return',episode_return)
+        returns.append(episode_return)
+        print('returns',returns)
         
         np.save(f'{checkpoint_dir}/eps_returns_{args.model_name}.npy',returns)
         # with open(os.path.join(save_dir, 
