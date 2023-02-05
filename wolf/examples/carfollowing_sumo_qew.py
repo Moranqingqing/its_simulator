@@ -26,7 +26,7 @@ from utils.replay_memory import ReplayMemory, Transition
 import time
 
 # Create logger
-logger = logging.getLogger('test')
+logger = logging.getLogger('train')
 logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
 
@@ -45,9 +45,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--seed", default=0, help="Random seed")
 parser.add_argument("--save_dir", default="./saved_modelsnew/", help="Dir. path to load a model")
 parser.add_argument("--load_model", default=None, help="Path to load a model")
-parser.add_argument("--model-name", default='DDPG', help="trained model's name")
-parser.add_argument("--episodes", default=2, help="Num. of training episodes")
-parser.add_argument("--learning-steps", default=5, help="Num. of training steps in each episode")
+parser.add_argument("--model-name", default='dmacfmDDPG', help="trained model's name")
+parser.add_argument("--episodes", default=200, help="Num. of training episodes")
+parser.add_argument("--save-interval", default=10, help="Num. of training episodes")
+parser.add_argument("--learning-steps", default=5000, help="Num. of training steps in each episode")
 parser.add_argument("--network", default="loop", choices=['loop', 'straight'])
 parser.add_argument("--speed-limit", default=None, type=int)
 parser.add_argument("--replay_size", default=1e6, type=int,
@@ -115,7 +116,7 @@ env_config = {
             "default_policy": None,
 
             "action_params": {
-                "name": "VehActionConnector",
+                "name": "VehActionConnector_lc",
                 "params": {},
             },
             "obs_params": {
@@ -191,7 +192,7 @@ vehicles.add(
         decel=3,
     ),
     lane_change_params=SumoLaneChangeParams(
-        lane_change_mode= 0b010101011001),
+        lane_change_mode= 'no_lc_safe'),
     num_vehicles=10) #1 * SCALING) ##bug?? why over 5 will collide!
 
 # Inflow Vehicles config
@@ -278,7 +279,7 @@ if __name__ == "__main__":
                     0.001,
                     (400, 300),
                     5, ##state space
-                    np.array([1,]), ##action space
+                    np.array([1,1]), ##action space
                     checkpoint_dir=checkpoint_dir
                     )
     if args.load_model != None:
@@ -290,126 +291,123 @@ if __name__ == "__main__":
     # controller='DDPG'
     returns = list()
 
-for _ in range(args.episodes):
-    step = 0
-    states=[]
-    actions=[]
-    lv_speed=[]
-    lv_acc=[]
-    state=env.reset()
-    agent_names = list(state.keys())
-    batch_state = np.array([state[agent_name] for agent_name in agent_names])
-    # print('state',state)
-    if args.controller == 'rl':
-        state = torch.Tensor(batch_state).to(device)
-    episode_return = 0
-    Travel_distance=0
-    delta_T=0.1
-    for i in range(args.learning_steps):
+    for eps in range(args.episodes):
+        step = 0
+        states=[]
+        actions=[]
+        lv_speed=[]
+        lv_acc=[]
+        state=env.reset()
+        agent_names = list(state.keys())
+        batch_state = np.array([state[agent_name] for agent_name in agent_names])
+        # print('state',state)
         if args.controller == 'rl':
-            states.append(state.cpu().numpy())
-            Travel_distance=Travel_distance+state[0][0]*delta_T
-            action = agent.calc_action(state, action_noise=None)
-            actions.append(action)
-            # if state[0][2]<20 and action>0:
-            #     action=-2*action  ##take the brake if too close!!
+            state = torch.Tensor(batch_state).to(device)
+        episode_return = 0
+        Travel_distance=0
+        delta_T=0.1
+        for i in range(args.learning_steps):
+            if args.controller == 'rl':
+                states.append(state.cpu().numpy())
+                Travel_distance=Travel_distance+state[0][0]*delta_T
+                action = agent.calc_action(state, action_noise=None)
+                actions.append(action)
+                # if state[0][2]<20 and action>0:
+                #     action=-2*action  ##take the brake if too close!!
 
-            accels = action.cpu().numpy()
-            if args.constrain:
-                accels = batch_constrain_action(state, accels)
+                accels = action.cpu().numpy()
+                if args.constrain:
+                    accels = batch_constrain_action(state, accels)
+                
+                action_dir = dict((agent_name, accel) for agent_name, accel in zip(agent_names, accels))
+                next_state, reward, done_dict, _ = env.step(action_dir)
+                reward=sum(reward.values())/len(reward.values())
+                done=done_dict.get('__all__')
+                episode_return += reward
+
+                record = env.history_record ## record info
+
+                agent_names = list(next_state.keys())
+                for agent_name in done_dict:
+                    if done_dict[agent_name] and agent_name != '__all__':
+                        agent_names.remove(agent_name)
+                batch_state = np.array([next_state[agent_name] for agent_name in agent_names])
+                
+                mask = torch.Tensor([done]).to(device)
+                reward = torch.Tensor([reward]).to(device)
+                next_state = torch.Tensor([batch_state]).to(device)
+
+                for i in range(min(len(state),len(batch_state))):
+                    state_= torch.reshape(state[0],(1,5))
+                    next_state_=torch.reshape(next_state[0][i],(1,5))
+                    action_=torch.reshape(action[i],(1,2))
+                    memory.push(state_, action_, mask, next_state_, reward)
             
-            action_dir = dict((agent_name, accel) for agent_name, accel in zip(agent_names, accels))
-            next_state, reward, done_dict, _ = env.step(action_dir)
-            reward=sum(reward.values())/len(reward.values())
-            done=done_dict.get('__all__')
-            episode_return += reward
+                
+                state = next_state[0]
 
-            record = env.history_record ## record info
-            # human_ino=record.get('human_0')
-            # print('info',human_ino['speed'])
-            # lv_speed.append(human_ino['speed'])
-            # lv_acc.append(human_ino['accel'])
-            # np.save('lv_speed.npy',lv_speed)
-            # np.save('lv_acc.npy',lv_acc)
-            # print('travel distance',Travel_distance.cpu().numpy())
-            agent_names = list(next_state.keys())
-            for agent_name in done_dict:
-                if done_dict[agent_name] and agent_name != '__all__':
-                    agent_names.remove(agent_name)
-            batch_state = np.array([next_state[agent_name] for agent_name in agent_names])
-            
-            mask = torch.Tensor([done]).to(device)
-            reward = torch.Tensor([reward]).to(device)
-            next_state = torch.Tensor([batch_state]).to(device)
+                epoch_value_loss = 0
+                epoch_policy_loss = 0
 
-            for i in range(min(len(state),len(batch_state))):
-                state_= torch.reshape(state[0],(1,5))
-                next_state_=torch.reshape(next_state[0][i],(1,5))
-                action_=torch.reshape(action[i],(1,1))
-                memory.push(state_, action_, mask, next_state_, reward)
+                if len(memory) > args.batch_size:
+                    transitions = memory.sample(args.batch_size)
+                    # Transpose the batch
+                    # (see http://stackoverflow.com/a/19343/3343043 for detailed explanation).
+                    batch = Transition(*zip(*transitions))
+
+                    # Update actor and critic according to the batch
+                    value_loss, policy_loss = agent.update_params(batch)
+
+                    epoch_value_loss += value_loss
+                    epoch_policy_loss += policy_loss
+
+                if done:
+                    episode_counter += 1
+                    break
+
+
+            else:
+                next_state, reward, done, _ = env.step({})
+                done = done.get('__all__')
+
+            step += 1
+
+
+        env_record = env.history_record
+        env_global_metric = env.global_metric
+
+        # Convert it to pandas DataFrame
+        stats = pd.DataFrame(env_record)
+
+        # Some annotation for filename
+        save_dir = os.path.dirname(args.save_dir)
+        model_name = os.path.basename(args.model_name)
+        curr_steps = ''
+        if args.controller == 'rl':
+            curr_steps = '_'+''.join(filter(str.isdigit, model_name))
+        lv_str = 'lv' if args.lv else 'no-lv'
+        speed_limit_str = args.speed_limit if args.speed_limit else 'dynamic'
+        constraint_str = 'constrain' if args.constrain else 'no-constrain'
+
+        if eps % args.save_interval==0:
+            agent.save_checkpoint(eps, memory,model_name=args.model_name)
+            time_last_checkpoint = time.time()
+            logger.info('Saved model at {}'.format(time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.localtime())))
+            print('episode return',episode_return)
+            returns.append(episode_return)
+            print('returns',returns)
         
-            
-            state = next_state[0]
-
-            epoch_value_loss = 0
-            epoch_policy_loss = 0
-
-            if len(memory) > args.batch_size:
-                transitions = memory.sample(args.batch_size)
-                # Transpose the batch
-                # (see http://stackoverflow.com/a/19343/3343043 for detailed explanation).
-                batch = Transition(*zip(*transitions))
-
-                # Update actor and critic according to the batch
-                value_loss, policy_loss = agent.update_params(batch)
-
-                epoch_value_loss += value_loss
-                epoch_policy_loss += policy_loss
-
-            if done:
-                episode_counter += 1
-                break
-
-
-        else:
-            next_state, reward, done, _ = env.step({})
-            done = done.get('__all__')
-
-        step += 1
-
-
-    env_record = env.history_record
-    env_global_metric = env.global_metric
-
-    # Convert it to pandas DataFrame
-    stats = pd.DataFrame(env_record)
-
-    # Some annotation for filename
-    save_dir = os.path.dirname(args.save_dir)
-    model_name = os.path.basename(args.model_name)
-    curr_steps = ''
-    if args.controller == 'rl':
-        curr_steps = '_'+''.join(filter(str.isdigit, model_name))
-    lv_str = 'lv' if args.lv else 'no-lv'
-    speed_limit_str = args.speed_limit if args.speed_limit else 'dynamic'
-    constraint_str = 'constrain' if args.constrain else 'no-constrain'
-
-    agent.save_checkpoint(timestep, memory,model_name=args.model_name)
-    time_last_checkpoint = time.time()
-    logger.info('Saved model at {}'.format(time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.localtime())))
-    print('episode return',episode_return)
-    returns.append(episode_return)
-    np.save(f'{checkpoint_dir}/eps_returns_{args.model_name}.npy',returns)
-    # with open(os.path.join(save_dir, 
-    #     f'ddpg_test_qew_{curr_steps}_{args.controller}_{lv_str}_speed_{speed_limit_str}_{constraint_str}.pkl'), 'wb') as f:
-    #     pkl.dump(stats, f)
-    # with open(os.path.join(save_dir, 
-    #     f'ddpg_test_qew_{curr_steps}_{args.controller}_{lv_str}_speed_{speed_limit_str}_{constraint_str}_global_metric.pkl'), 'wb') as f:
-    #     pkl.dump(env_global_metric, f)
+        np.save(f'{checkpoint_dir}/eps_returns_{args.model_name}.npy',returns)
+        # with open(os.path.join(save_dir, 
+        #     f'ddpg_test_qew_{curr_steps}_{args.controller}_{lv_str}_speed_{speed_limit_str}_{constraint_str}.pkl'), 'wb') as f:
+        #     pkl.dump(stats, f)
+        # with open(os.path.join(save_dir, 
+        #     f'ddpg_test_qew_{curr_steps}_{args.controller}_{lv_str}_speed_{speed_limit_str}_{constraint_str}_global_metric.pkl'), 'wb') as f:
+        #     pkl.dump(env_global_metric, f)
 
 
 
-    # np.save('stateidmenv2.npy',states)
-    # np.save('actionidmenv2.npy',actions)
+        # np.save('stateidmenv2.npy',states)
+        # np.save('actionidmenv2.npy',actions)
 
-env.close()
+    env.close()
