@@ -78,6 +78,10 @@ class VehActionConnector_lc(ActionConnector):
         direction=int(action[1]/3)
         
         if self.veh_id in self._kernel.get_rl_vehicle_ids():
+            lane_id = self._kernel.get_edge(self.veh_id)
+            if lane_id=='4255':
+                direction=0
+            # print('lane change direction', direction, 'lane id',lane_id)## add hard constraint to make sure it will not change to wrong lane
             self._kernel.apply_acceleration(self.veh_id, acc)
             self._kernel.apply_lane_change(self.veh_id, direction)
         else:
